@@ -1,255 +1,658 @@
-1️⃣ 1_pydantic_why.py
+# 📘 Pydantic v2 Notes (Complete Cheat Sheet)
 
-👉 Goal: Show how Field, Annotated, and built-in validators work
+Pydantic is a Python library for **data validation, parsing, and serialization** using Python type hints.
 
-from pydantic import BaseModel, EmailStr, AnyUrl, Field
-from typing import List, Dict, Optional, Annotated
+It automatically:
+- ✅ Validates input data
+- ✅ Converts compatible types (type coercion)
+- ✅ Raises clear validation errors
+- ✅ Generates schemas (FastAPI/OpenAPI)
 
-🔹 Why these imports?
+---
 
-BaseModel → parent class for all Pydantic models
+# 1. BaseModel
 
-EmailStr → validates email format (needs email-validator)
+Every Pydantic model inherits from `BaseModel`.
 
-AnyUrl → validates any URL (http, https, ftp, etc.)
-
-Field → add constraints + metadata
-
-Annotated → modern (v2) way to attach Field to a type
+```python
+from pydantic import BaseModel
 
 class Patient(BaseModel):
+    name: str
+    age: int
+```
 
+Creating an object:
 
-👉 This class defines the schema + validation rules
+```python
+patient = Patient(
+    name="Nitish",
+    age="30"
+)
+```
 
-    name: Annotated[
-        str,
-        Field(
-            max_length=50,                     # max allowed characters
-            title='Name of the patient',       # used in OpenAPI docs
-            description='Give the name of the patient in less than 50 chars',
-            examples=['Nitish', 'Amit']        # Swagger UI example values
-        )
-    ]
+Pydantic automatically converts:
 
+```
+"30"  →  30
+```
 
-📌 Other useful Field options
+This behavior is called **type coercion**.
 
-min_length
+---
 
-regex
+# 2. Common Imports
 
-alias
+```python
+from pydantic import (
+    BaseModel,
+    Field,
+    EmailStr,
+    AnyUrl,
+    field_validator,
+    model_validator,
+    computed_field
+)
 
-deprecated=True
+from typing import (
+    List,
+    Dict,
+    Optional,
+    Annotated
+)
+```
 
-    email: EmailStr           # validates email format
-    linkedin_url: AnyUrl      # validates URL
+## What each import does
 
-    age: int = Field(gt=0, lt=120)
+| Import | Purpose |
+|---------|----------|
+| `BaseModel` | Base class for all models |
+| `Field` | Add validation rules and metadata |
+| `Annotated` | Modern (v2) way to attach `Field` to a type |
+| `EmailStr` | Validates email addresses |
+| `AnyUrl` | Validates URLs |
+| `field_validator` | Validate a single field |
+| `model_validator` | Validate multiple fields together |
+| `computed_field` | Create calculated fields |
 
+---
 
-📌 Numeric constraints
+# 3. Field()
 
-gt → greater than
+`Field()` is used to add:
 
-ge → greater or equal
+- Validation constraints
+- Default values
+- Documentation metadata
+- Examples
 
-lt → less than
+Example:
 
-le → less or equal
+```python
+name: Annotated[
+    str,
+    Field(
+        max_length=50,
+        title="Patient Name",
+        description="Patient name under 50 characters",
+        examples=["Nitish", "Amit"]
+    )
+]
+```
 
-multiple_of
+---
 
-    weight: Annotated[float, Field(gt=0, strict=True)]
+## Common Field Parameters
 
+### String Constraints
 
-📌 strict=True
+```python
+Field(
+    min_length=3,
+    max_length=30,
+    pattern=r"^[A-Za-z]+$"
+)
+```
 
-❌ "75.2" → rejected
+| Option | Description |
+|---------|-------------|
+| `min_length` | Minimum characters |
+| `max_length` | Maximum characters |
+| `pattern` | Regular expression |
+| `alias` | Alternate input name |
+| `deprecated=True` | Marks field deprecated |
 
-✅ 75.2 → accepted
-(useful when you don’t want type coercion)
+---
 
-    married: Annotated[
-        bool,
-        Field(default=None, description='Is the patient married or not')
-    ]
+### Numeric Constraints
 
+```python
+age: int = Field(
+    gt=0,
+    lt=120
+)
+```
 
-📌 Optional with metadata
+| Constraint | Meaning |
+|------------|---------|
+| `gt` | Greater than |
+| `ge` | Greater than or equal |
+| `lt` | Less than |
+| `le` | Less than or equal |
+| `multiple_of` | Must be divisible by value |
 
-    allergies: Annotated[
-        Optional[List[str]],
-        Field(default=None, max_length=5)
-    ]
+Example
 
+```python
+price: float = Field(gt=0)
+```
 
-📌 max_length=5 → max number of items in list
+---
 
-    contact_details: Dict[str, str]
+### Strict Validation
 
+Normally Pydantic converts types automatically.
 
-📌 Any string → string mapping (phone, email, emergency, etc.)
+```python
+weight: float
+```
 
-patient_info = {
-    'name':'nitish',
-    'email':'abc@gmail.com',
-    'linkedin_url':'http://linkedin.com/1322',
-    'age': '30',           # STRING → auto converted to int
-    'weight': 75.2,
-    'contact_details':{'phone':'2353462'}
+Input:
+
+```python
+"75.2"
+```
+
+becomes
+
+```python
+75.2
+```
+
+If you don't want automatic conversion:
+
+```python
+weight: Annotated[
+    float,
+    Field(strict=True)
+]
+```
+
+Now
+
+```
+❌ "75.2"
+```
+
+is rejected.
+
+Only
+
+```
+✅ 75.2
+```
+
+is accepted.
+
+---
+
+# 4. Special Data Types
+
+## Email Validation
+
+```python
+email: EmailStr
+```
+
+Accepts:
+
+```
+abc@gmail.com
+```
+
+Rejects:
+
+```
+abcgmail.com
+```
+
+---
+
+## URL Validation
+
+```python
+linkedin: AnyUrl
+```
+
+Valid:
+
+```
+https://linkedin.com/in/nitish
+```
+
+Invalid:
+
+```
+linkedin.com
+```
+
+---
+
+# 5. Optional Fields
+
+```python
+married: Optional[bool] = None
+```
+
+or
+
+```python
+married: Annotated[
+    Optional[bool],
+    Field(
+        default=None,
+        description="Is patient married?"
+    )
+]
+```
+
+---
+
+# 6. Lists
+
+```python
+allergies: List[str]
+```
+
+Optional:
+
+```python
+Optional[List[str]]
+```
+
+Maximum number of items:
+
+```python
+allergies: Annotated[
+    Optional[List[str]],
+    Field(max_length=5)
+]
+```
+
+---
+
+# 7. Dictionaries
+
+```python
+contact_details: Dict[str, str]
+```
+
+Example
+
+```python
+{
+    "phone":"9876543210",
+    "emergency":"9988776655"
 }
+```
 
+Useful for dynamic key-value data.
 
-📌 Pydantic does type coercion by default
+---
 
-2️⃣ _field_validator.py
+# 8. Type Coercion
 
-👉 Goal: Custom validation for individual fields
+By default Pydantic converts compatible values.
 
-from pydantic import BaseModel, EmailStr, field_validator
+Example
 
-class Patient(BaseModel):
+Input
 
-    @field_validator('email')
-    @classmethod
-    def email_validator(cls, value):
+```python
+{
+    "age":"30",
+    "weight":"75.2"
+}
+```
 
+Output
 
-📌 Runs only for email field
+```python
+age = 30
+weight = 75.2
+```
 
-        valid_domains = ['hdfc.com', 'icici.com']
-        domain_name = value.split('@')[-1]
+Disable using
 
-        if domain_name not in valid_domains:
-            raise ValueError('Not a valid domain')
+```python
+strict=True
+```
 
+---
 
-✔ Enforces business rule, not format rule
+# 9. Field Validators
 
-    @field_validator('name')
-    @classmethod
-    def transform_name(cls, value):
-        return value.upper()
+Use when validation involves **one field only**.
 
+```python
+from pydantic import field_validator
+```
 
-📌 Used for data transformation
+Example
 
-    @field_validator('age', mode='after')
+```python
+@field_validator("email")
+@classmethod
+def validate_email(cls, value):
 
+    domain = value.split("@")[-1]
 
-📌 mode='after'
+    if domain not in ["hdfc.com", "icici.com"]:
+        raise ValueError("Invalid domain")
 
-Runs after type coercion
+    return value
+```
 
-'30' → 30 → then validated
+This validates business rules, **not email format**.
 
-Other mode:
+---
 
-mode='before' → raw input
+## Data Transformation
 
-3️⃣ model_validator.py
+Validators can also modify data.
 
-👉 Goal: Validate using multiple fields together
+```python
+@field_validator("name")
+@classmethod
+def uppercase_name(cls, value):
+    return value.upper()
+```
 
-from pydantic import BaseModel, EmailStr, model_validator
+Input
 
-    @model_validator(mode='after')
-    def validate_emergency_contact(cls, model):
+```
+nitish
+```
 
+Output
 
-📌 Used when:
+```
+NITISH
+```
 
-Validation depends on more than one field
+---
 
-        if model.age > 60 and 'emergency' not in model.contact_details:
-            raise ValueError(
-                'Patients older than 60 must have an emergency contact'
-            )
+## Validator Modes
 
+### Before
 
-📌 Field validators ❌
-📌 Model validator ✅
+```python
+mode="before"
+```
 
-4️⃣ computed_fields.py
+Runs before type conversion.
 
-👉 Goal: Derived values (not stored, auto calculated)
+```
+"30"
+```
 
-from pydantic import BaseModel, EmailStr, computed_field
+is still a string.
 
-    @computed_field
-    @property
-    def bmi(self) -> float:
+---
 
+### After
 
-📌 Why computed field?
+```python
+mode="after"
+```
 
-Not part of input
+Runs after conversion.
 
-Automatically included in output
+```
+"30"
+```
 
-Recalculated every time
+becomes
 
-        bmi = round(self.weight / (self.height ** 2), 2)
-        return bmi
+```
+30
+```
 
+before validation.
 
-📌 Appears in:
+---
 
-model_dump()
+# 10. Model Validators
 
-API responses
+Use when validation depends on **multiple fields**.
 
-5️⃣ nested_models.py
+```python
+from pydantic import model_validator
+```
 
-👉 Goal: Structured & reusable models
+Example
 
+```python
+@model_validator(mode="after")
+def validate_patient(self):
+
+    if (
+        self.age > 60
+        and "emergency" not in self.contact_details
+    ):
+        raise ValueError(
+            "Emergency contact required."
+        )
+
+    return self
+```
+
+---
+
+## Difference
+
+| Validator | Used For |
+|------------|----------|
+| `field_validator` | One field |
+| `model_validator` | Multiple fields |
+
+---
+
+# 11. Computed Fields
+
+Sometimes a value shouldn't be stored.
+
+It should be calculated automatically.
+
+Example: BMI
+
+```python
+from pydantic import computed_field
+
+@computed_field
+@property
+def bmi(self):
+
+    return round(
+        self.weight / (self.height ** 2),
+        2
+    )
+```
+
+Advantages
+
+- Not part of input
+- Automatically calculated
+- Included in output
+- Always up to date
+
+Example
+
+```python
+patient.model_dump()
+```
+
+Output
+
+```python
+{
+    "weight":70,
+    "height":1.75,
+    "bmi":22.86
+}
+```
+
+---
+
+# 12. Nested Models
+
+Models can contain other models.
+
+```python
 class Address(BaseModel):
+
     city: str
     state: str
     pin: str
 
+
 class Patient(BaseModel):
+
     name: str
-    gender: str
     age: int
+
     address: Address
+```
 
+Input
 
-📌 Benefits:
+```python
+{
+    "name":"Nitish",
+    "age":24,
 
-Clean structure
+    "address":{
+        "city":"Delhi",
+        "state":"Delhi",
+        "pin":"110001"
+    }
+}
+```
 
-Automatic validation
+Pydantic automatically validates nested objects.
 
-Reusable Address model
+No extra code required.
 
-patient1 = Patient(**patient_dict)
+---
 
+# 13. Serialization
 
-📌 Pydantic auto-validates nested models
-(no extra code needed)
+Convert model → dictionary
 
-6️⃣ Serialization (model_dump)
-temp = patient1.model_dump(exclude_unset=True)
+```python
+patient.model_dump()
+```
 
+---
 
-📌 Common options:
+## Common Options
 
-exclude_unset=True → skip default values
+Exclude fields with default values
 
-exclude_none=True
+```python
+patient.model_dump(
+    exclude_unset=True
+)
+```
 
-include={'name', 'age'}
+Exclude `None`
 
-exclude={'address'}
+```python
+patient.model_dump(
+    exclude_none=True
+)
+```
 
-🔑 Big picture (remember this)
-Feature	When to use
-Field	Simple constraints & metadata
-Annotated	Clean modern syntax (v2)
-field_validator	Single field logic
-model_validator	Cross-field logic
-computed_field	Derived values
-Nested models	Complex structured data
+Include only specific fields
+
+```python
+patient.model_dump(
+    include={"name","age"}
+)
+```
+
+Exclude fields
+
+```python
+patient.model_dump(
+    exclude={"address"}
+)
+```
+
+---
+
+# 14. Complete Example
+
+```python
+patient_info = {
+
+    "name":"Nitish",
+
+    "email":"abc@gmail.com",
+
+    "linkedin_url":"https://linkedin.com",
+
+    "age":"30",
+
+    "weight":75.2,
+
+    "contact_details":{
+        "phone":"9876543210"
+    }
+}
+
+patient = Patient(**patient_info)
+```
+
+Pydantic will:
+
+- Validate email
+- Validate URL
+- Convert `"30"` → `30`
+- Validate weight
+- Validate nested models
+- Run field validators
+- Run model validators
+
+---
+
+# 📝 Quick Revision Table
+
+| Feature | Purpose | Use When |
+|----------|----------|----------|
+| `BaseModel` | Define models | Every Pydantic model |
+| `Field` | Constraints & metadata | Validation rules |
+| `Annotated` | Modern way to attach `Field` | Pydantic v2 |
+| `EmailStr` | Email validation | Email fields |
+| `AnyUrl` | URL validation | Website links |
+| `strict=True` | Disable type coercion | Exact data types required |
+| `field_validator` | Validate one field | Email, name, age, etc. |
+| `model_validator` | Validate multiple fields | Cross-field business logic |
+| `computed_field` | Calculated property | BMI, totals, taxes |
+| Nested Models | Reusable structured data | Address, Company, User |
+| `model_dump()` | Serialize model | Convert model → dictionary |
+
+---
+
+# 🎯 Rule of Thumb
+
+| Situation | Use |
+|-----------|-----|
+| Simple validation | `Field()` |
+| String/number constraints | `Field()` |
+| Add metadata | `Field()` |
+| Validate one field | `field_validator` |
+| Validate multiple fields together | `model_validator` |
+| Calculate derived values | `computed_field` |
+| Reuse complex objects | Nested Models |
+| Convert model to dictionary | `model_dump()` |
