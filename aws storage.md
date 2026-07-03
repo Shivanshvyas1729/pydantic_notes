@@ -96,8 +96,31 @@ storage volume is a single, accessible amount of storage space on a physical or 
 
 
 
+<img width="1235" height="541" alt="image" src="https://github.com/user-attachments/assets/8806f2db-de67-459f-98ff-8441df9e155a" />
 
 
+
+Think of it like this:
+
+### **1. Block Storage (from "image_f8c26c.png")**
+
+* **Best for:** High-speed work like databases and big data analytics.
+* **Why:** You can detach it from one computer and reattach it to another, which makes it perfect for managing large, complex systems like Apache Hadoop or Spark.
+* **Simple takeaway:** It is like a high-performance hard drive that your computer or server uses to run fast and stay reliable.
+
+---
+
+### **2. Object Storage (from "image_f8d4ad.png")**
+
+* **Best for:** Backups and "Disaster Recovery" (keeping a safe copy of your data in case something goes wrong).
+* **Why:** It is much cheaper than building a whole second data center just for emergencies.
+* **Simple takeaway:** It acts as an affordable, secure "insurance policy" for your files, protecting you against human errors, system crashes, or natural disasters.
+
+<img width="1248" height="621" alt="image" src="https://github.com/user-attachments/assets/f690fd28-6444-4277-b782-560c76da0456" />
+
+<img width="896" height="384" alt="image" src="https://github.com/user-attachments/assets/364ae616-caa9-4272-89d0-47e4946eec32" />
+
+<img width="1280" height="626" alt="image" src="https://github.com/user-attachments/assets/c4a2b17c-b410-42ec-86be-fe4b47495a2c" />
 
 
 
