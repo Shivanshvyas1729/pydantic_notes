@@ -673,17 +673,8 @@ Client receives response
 
 
 
-
-
-
-
-
-
-
-
-
-
-<details><summary> Flask Request Data Cheat Sheet </summary>
+<details>
+    <summary> Flask Request Data Cheat Sheet </summary>
 
 
 
@@ -926,5 +917,54 @@ returns only one value.
 * Duplicate keys are **not allowed inside a JSON object**.
 * The same field name **can exist in `request.form` and `request.files`**, because they are separate collections.
 * If multiple form fields share the same name (e.g., checkboxes), use **`request.form.getlist()`** to retrieve all values.
-* </details>
+
+<details><summary> more </summary>
+</details>
+
+For day-to-day API development, you'll mainly use these **10 status codes**.
+
+| Code    | Name                  | When to Use                                        | Example Scenario                                | FastAPI                                                                                      | Flask                                                |
+| ------- | --------------------- | -------------------------------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| **200** | OK                    | Request completed successfully                     | Get user profile, update user                   | `return {"user": user}`                                                                      | `return jsonify(user), 200`                          |
+| **201** | Created               | A new resource was created                         | Register user, create post                      | `@app.post(..., status_code=201)`                                                            | `return jsonify(data), 201`                          |
+| **204** | No Content            | Success, but nothing to return                     | Delete a user, logout                           | `return Response(status_code=204)`                                                           | `return "", 204`                                     |
+| **400** | Bad Request           | Client sent an invalid request                     | Missing query parameter, malformed JSON         | `raise HTTPException(400, "Bad Request")`                                                    | `return jsonify(error="Bad Request"), 400`           |
+| **401** | Unauthorized          | User is not authenticated                          | Missing/expired JWT token                       | `raise HTTPException(401, "Invalid token")`                                                  | `return jsonify(error="Unauthorized"), 401`          |
+| **403** | Forbidden             | User is authenticated but not allowed              | Normal user accessing admin API                 | `raise HTTPException(403, "Forbidden")`                                                      | `return jsonify(error="Forbidden"), 403`             |
+| **404** | Not Found             | Requested resource doesn't exist                   | User ID doesn't exist                           | `raise HTTPException(404, "User not found")`                                                 | `return jsonify(error="User not found"), 404`        |
+| **409** | Conflict              | Request conflicts with existing data               | Email or username already exists                | `raise HTTPException(409, "Email already exists")`                                           | `return jsonify(error="Conflict"), 409`              |
+| **422** | Unprocessable Entity  | Request format is valid, but data fails validation | Invalid email, age < 18, missing required field | `raise HTTPException(422, "Validation failed")` *(FastAPI often returns this automatically)* | `return jsonify(error="Validation failed"), 422`     |
+| **500** | Internal Server Error | Unexpected server-side error                       | Database connection failed, unhandled exception | `raise HTTPException(500, "Internal Server Error")`                                          | `return jsonify(error="Internal Server Error"), 500` |
+
+### Quick Memory
+
+| Situation                                   | Status Code |
+| ------------------------------------------- | ----------- |
+| ✅ Success                                   | **200**     |
+| ➕ Created new resource                      | **201**     |
+| 🗑️ Deleted successfully (no response body) | **204**     |
+| ❌ Invalid request from client               | **400**     |
+| 🔑 Not logged in / invalid token            | **401**     |
+| 🚫 No permission                            | **403**     |
+| 🔍 Resource not found                       | **404**     |
+| ⚠️ Duplicate/conflicting data               | **409**     |
+| 📝 Validation failed                        | **422**     |
+| 💥 Server error                             | **500**     |
+
+### Common API Mapping
+
+| API                  | Success | Common Errors      |
+| -------------------- | ------- | ------------------ |
+| `GET /users/{id}`    | **200** | 401, 404, 500      |
+| `POST /users`        | **201** | 400, 409, 422, 500 |
+| `PUT /users/{id}`    | **200** | 400, 404, 422, 500 |
+| `DELETE /users/{id}` | **204** | 404, 500           |
+| `POST /login`        | **200** | 400, 401           |
+| `GET /admin`         | **200** | 401, 403           |
+| `POST /upload`       | **201** | 400, 422, 500      |
+
+This is the subset of HTTP status codes you'll use for **95% of REST APIs** in frameworks like FastAPI, Flask, Django REST Framework, Spring Boot, and Express.js.
+
+
+  </details>
 
