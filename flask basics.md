@@ -927,3 +927,4 @@ returns only one value.
 * The same field name **can exist in `request.form` and `request.files`**, because they are separate collections.
 * If multiple form fields share the same name (e.g., checkboxes), use **`request.form.getlist()`** to retrieve all values.
 * </details>
+
