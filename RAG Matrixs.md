@@ -847,6 +847,280 @@ If you're building a production RAG system, these are the metrics that are most 
 * **Retriever quality:** Precision@K, Recall@K, MRR, nDCG
 * **Answer quality:** Faithfulness, Answer Relevancy, Answer Correctness
 * **Hallucination control:** Faithfulness, Hallucination Rate, Citation Accuracy
+
+  Yes. **Human-in-the-Loop (HITL)** is one of the most important evaluation and improvement mechanisms for RAG systems, especially in production. However, **it is not an evaluation metric itself**. Instead, it is an **evaluation methodology (or feedback loop)** where humans review, rate, or correct the system's outputs.
+
+---
+
+# What is Human-in-the-Loop (HITL)?
+
+Human-in-the-Loop means that **a human participates in evaluating or improving the RAG system instead of relying only on automated metrics**.
+
+```text
+User Query
+      │
+      ▼
+Retriever
+      │
+Retrieved Documents
+      │
+      ▼
+LLM Generates Answer
+      │
+      ▼
+Human Reviews Answer
+      │
+      ├── Correct ✔
+      ├── Incorrect ✘
+      ├── Hallucination
+      ├── Missing Information
+      ├── Poor Retrieval
+      ▼
+Feedback Stored
+      │
+Improve Retriever / Prompt / LLM
+```
+
+---
+
+# Why do we need HITL?
+
+Automated metrics like:
+
+* Faithfulness
+* BLEU
+* ROUGE
+* BERTScore
+* Context Precision
+
+cannot perfectly judge whether an answer is truly useful or acceptable.
+
+For example:
+
+**Question**
+
+> "Can diabetics eat mangoes?"
+
+Generated answer:
+
+> "Yes, but only in moderate amounts and after consulting a doctor."
+
+A human doctor may rate this as **Excellent**.
+
+BLEU or ROUGE may give a poor score because the wording differs from a reference answer.
+
+---
+
+# What do humans evaluate?
+
+Humans usually score several aspects of a RAG response.
+
+| Criterion        | What is evaluated?                                 |
+| ---------------- | -------------------------------------------------- |
+| Correctness      | Is the answer factually correct?                   |
+| Faithfulness     | Is every claim supported by the retrieved context? |
+| Relevance        | Does the answer address the user's question?       |
+| Completeness     | Is any important information missing?              |
+| Clarity          | Is the answer easy to understand?                  |
+| Helpfulness      | Would this answer satisfy the user?                |
+| Hallucination    | Did the model invent unsupported facts?            |
+| Citation Quality | Are the cited documents actually relevant?         |
+
+---
+
+# Example
+
+### Question
+
+```text
+What is the capital of France?
+```
+
+Retrieved document
+
+```text
+France's capital is Paris.
+```
+
+Generated answer
+
+```text
+Paris is the capital of France.
+```
+
+Human evaluation
+
+```text
+Correctness      ⭐⭐⭐⭐⭐
+Faithfulness     ⭐⭐⭐⭐⭐
+Clarity          ⭐⭐⭐⭐⭐
+Hallucination    None
+```
+
+---
+
+Another example:
+
+Question
+
+```text
+Who invented Python?
+```
+
+Retrieved document
+
+```text
+Python is a programming language.
+```
+
+Generated answer
+
+```text
+Python was invented by Elon Musk.
+```
+
+Human evaluation
+
+```text
+Correctness      ⭐☆☆☆☆
+Faithfulness     ☆☆☆☆☆
+Hallucination    Severe
+```
+
+The human can immediately identify an error that automated metrics may miss if they don't have the appropriate reference or retrieval context.
+
+---
+
+# Rating scales
+
+Most organizations use simple rating scales.
+
+### 1–5 Star Rating
+
+```text
+5 = Excellent
+
+4 = Good
+
+3 = Average
+
+2 = Poor
+
+1 = Bad
+```
+
+---
+
+### Binary Rating
+
+```text
+Correct
+
+Incorrect
+```
+
+---
+
+### Yes / No
+
+```text
+Faithful?
+
+Yes
+
+No
+```
+
+---
+
+### Pass / Fail
+
+```text
+Useful
+
+Not Useful
+```
+
+---
+
+# How is the feedback used?
+
+Human feedback can improve several parts of a RAG system.
+
+```text
+Human Feedback
+      │
+      ▼
+Store Ratings
+      │
+      ├── Improve Embeddings
+      ├── Improve Chunking
+      ├── Improve Retriever
+      ├── Improve Prompt
+      ├── Fine-tune LLM
+      ├── Build Better Evaluation Dataset
+      ▼
+Better RAG System
+```
+
+---
+
+# Example feedback record
+
+```json
+{
+  "question": "Who invented Python?",
+  "retrieved_context": "Python is a programming language.",
+  "generated_answer": "Python was invented by Elon Musk.",
+  "correctness": 1,
+  "faithfulness": 1,
+  "relevance": 2,
+  "hallucination": true,
+  "comments": "Answer contradicts the retrieved context."
+}
+```
+
+---
+
+# Human-in-the-Loop tools
+
+Several evaluation frameworks support incorporating human judgments:
+
+* **RAGAS** – Human-labeled datasets can be used to validate automated metrics.
+* **DeepEval** – Supports manual review alongside automated evaluation.
+* **TruLens** – Allows developers to inspect traces and collect human feedback.
+* **LangSmith** – Supports annotators reviewing runs, adding scores, and comparing prompts or model versions.
+* **Phoenix (Arize)** – Provides observability and human annotation workflows for LLM applications.
+
+---
+
+# HITL vs Automated Metrics
+
+| Feature                        | Automated Metrics | Human-in-the-Loop |
+| ------------------------------ | ----------------- | ----------------- |
+| Speed                          | Very fast         | Slow              |
+| Cost                           | Low               | High              |
+| Scalability                    | Excellent         | Limited           |
+| Detects hallucinations         | Sometimes         | Very well         |
+| Judges usefulness              | Limited           | Excellent         |
+| Understands context and nuance | Limited           | Excellent         |
+| Requires reference answers     | Often             | Not always        |
+
+---
+
+# When should you use HITL?
+
+Human-in-the-Loop is especially valuable for:
+
+* Medical RAG systems
+* Legal document assistants
+* Financial advisory assistants
+* Enterprise knowledge bases
+* Customer support bots
+* Any high-stakes application where incorrect answers could have significant consequences
+
+In these domains, it's common to combine **automated metrics** (such as Faithfulness, Context Precision, and Answer Relevancy) with **periodic human review** to ensure quality while keeping evaluation scalable.
+
 * **Production performance:** Latency, Throughput, Cost per Query
 
 These provide a balanced view of retrieval accuracy, generation quality, factual reliability, and operational efficiency.
