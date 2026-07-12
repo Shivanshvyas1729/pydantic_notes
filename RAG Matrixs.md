@@ -1,5 +1,95 @@
-RAG (Retrieval-Augmented Generation) evaluation is much broader than normal ML evaluation because **two different systems must be evaluated independently**:
 
+RAG (Retrieval-Augmented Generation) evaluation is much broader than normal ML evaluation because **two different systems must be evaluated independently**:
+# RAG Evaluation
+
+## 1. Retriever Evaluation
+- Precision@K
+- Recall@K
+- MRR (Mean Reciprocal Rank)
+- MAP (Mean Average Precision)
+- Hit Rate
+- nDCG (Normalized Discounted Cumulative Gain)
+
+## 2. Generator Evaluation
+- BLEU
+- ROUGE
+- BERTScore
+- Exact Match
+- Semantic Similarity
+- METEOR
+
+## 3. End-to-End Evaluation
+- Latency
+- Throughput
+- Cost
+- User Satisfaction
+- Success Rate
+- Error Rate
+
+---
+
+# RAG-Specific Metrics
+
+- Faithfulness
+- Context Precision
+- Context Recall
+- Context Relevancy
+- Answer Relevancy
+- Answer Correctness
+- Context Utilization
+- Hallucination Rate
+- Citation Accuracy
+- Noise Sensitivity
+
+---
+
+# Evaluation Methodologies
+
+- Offline Evaluation
+- Online Evaluation
+- Human-in-the-Loop
+- LLM-as-a-Judge
+- Pairwise Evaluation
+- A/B Testing
+- Continuous Evaluation
+
+---
+
+# Component-Level Evaluation
+
+- Chunking
+- Embeddings
+- Retriever
+- Re-ranker
+- Prompt
+- LLM
+
+---
+
+# Production Monitoring
+
+- Observability
+- Robustness
+- Safety
+- Cost Analysis
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<details><summary> basics </summary>
+
+- 
 1. **Retriever** (Did it retrieve the correct documents?)
 2. **Generator / LLM** (Did it generate the correct answer?)
 3. **Entire RAG Pipeline** (Did the user actually get a useful answer?)
@@ -1124,3 +1214,4 @@ In these domains, it's common to combine **automated metrics** (such as Faithful
 * **Production performance:** Latency, Throughput, Cost per Query
 
 These provide a balanced view of retrieval accuracy, generation quality, factual reliability, and operational efficiency.
+</details>
