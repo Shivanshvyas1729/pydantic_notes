@@ -243,6 +243,8 @@ messages: Annotated[list, add_messages]
 
 where the first part (`int`, `list`) is the actual type and the second part provides extra instructions for a library that understands it.
 </details>
+
+
 # 1. BaseModel
 
 Every Pydantic model inherits from `BaseModel`.
