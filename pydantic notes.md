@@ -877,6 +877,240 @@ Pydantic will:
 | Nested Models | Reusable structured data | Address, Company, User |
 | `model_dump()` | Serialize model | Convert model → dictionary |
 
+<details><summary>eg --</summary>
+Perfect. Here's **one input** and **one output** that demonstrates **all the Pydantic features** in a single example.
+
+---
+
+## Input
+
+```python
+from pydantic import (
+    BaseModel,
+    Field,
+    EmailStr,
+    HttpUrl,
+    field_validator,
+    model_validator,
+    computed_field,
+)
+
+
+# -------------------- Nested Model --------------------
+class Address(BaseModel):
+
+    city: str
+    state: str
+
+    # PIN must contain exactly 6 digits.
+    # Without this, values like "123" or "abcd" would also be accepted.
+    pin: str = Field(pattern=r"^\d{6}$")
+
+
+# -------------------- Main Model --------------------
+class Patient(BaseModel):
+
+    name: str
+
+    # Automatically validates email format.
+    email: EmailStr
+
+    # Automatically validates URL format.
+    linkedin_url: HttpUrl
+
+    # Age must be between 1 and 119.
+    age: int = Field(gt=0, lt=120)
+
+    weight: float = Field(gt=0)
+
+    height: float = Field(gt=0)
+
+    contact_details: dict
+
+    # Nested Model
+    address: Address
+
+    # ------------------------------------------------
+    # Runs BEFORE type conversion.
+    # Here age is still a string ("30").
+    # ------------------------------------------------
+    @field_validator("age", mode="before")
+    @classmethod
+    def before_age(cls, value):
+        print("Before Validator ->", value, type(value))
+        return value
+
+    # ------------------------------------------------
+    # Runs AFTER type conversion.
+    # Here age has become integer (30).
+    # ------------------------------------------------
+    @field_validator("age", mode="after")
+    @classmethod
+    def after_age(cls, value):
+        print("After Validator ->", value, type(value))
+        return value
+
+    # ------------------------------------------------
+    # Validate only ONE field.
+    # Business rule:
+    # Email must belong to company.
+    # ------------------------------------------------
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, value):
+
+        domain = value.split("@")[-1]
+
+        if domain not in ["hdfc.com", "icici.com"]:
+            raise ValueError("Only company emails allowed.")
+
+        return value
+
+    # ------------------------------------------------
+    # Transform data.
+    # Converts name into uppercase.
+    # ------------------------------------------------
+    @field_validator("name")
+    @classmethod
+    def uppercase_name(cls, value):
+        return value.upper()
+
+    # ------------------------------------------------
+    # Validate MULTIPLE fields together.
+    # If age > 60 then emergency contact is mandatory.
+    # ------------------------------------------------
+    @model_validator(mode="after")
+    def validate_patient(self):
+
+        if (
+            self.age > 60
+            and "emergency" not in self.contact_details
+        ):
+            raise ValueError(
+                "Emergency contact required."
+            )
+
+        return self
+
+    # ------------------------------------------------
+    # Automatically calculated field.
+    # User never enters BMI.
+    # ------------------------------------------------
+    @computed_field
+    @property
+    def bmi(self):
+        return round(
+            self.weight / (self.height ** 2),
+            2
+        )
+
+
+# -------------------- Input Data --------------------
+
+patient_data = {
+
+    # Will become uppercase.
+    "name": "nitish",
+
+    # Valid company email.
+    "email": "nitish@hdfc.com",
+
+    "linkedin_url":
+    "https://linkedin.com/in/nitish",
+
+    # String -> Automatically converted to int.
+    "age": "30",
+
+    "weight": 75,
+
+    "height": 1.75,
+
+    "contact_details": {
+        "phone": "9876543210"
+    },
+
+    "address": {
+        "city": "Delhi",
+        "state": "Delhi",
+        "pin": "110001"
+    }
+}
+
+
+patient = Patient(**patient_data)
+
+print("\nModel Output")
+print(patient)
+
+print("\nDictionary Output")
+print(patient.model_dump())
+```
+
+---
+
+## Output
+
+```text
+Before Validator -> 30 <class 'str'>
+
+After Validator -> 30 <class 'int'>
+
+
+Model Output
+
+name='NITISH'
+email='nitish@hdfc.com'
+linkedin_url=HttpUrl('https://linkedin.com/in/nitish')
+age=30
+weight=75.0
+height=1.75
+contact_details={'phone': '9876543210'}
+address=Address(
+    city='Delhi',
+    state='Delhi',
+    pin='110001'
+)
+bmi=24.49
+
+
+Dictionary Output
+
+{
+    'name': 'NITISH',
+    'email': 'nitish@hdfc.com',
+    'linkedin_url': HttpUrl('https://linkedin.com/in/nitish'),
+    'age': 30,
+    'weight': 75.0,
+    'height': 1.75,
+    'contact_details': {
+        'phone': '9876543210'
+    },
+    'address': {
+        'city': 'Delhi',
+        'state': 'Delhi',
+        'pin': '110001'
+    },
+    'bmi': 24.49
+}
+```
+
+### This single example demonstrates all the requested concepts:
+
+| Feature           | Where it's used                  | Result                                                           |
+| ----------------- | -------------------------------- | ---------------------------------------------------------------- |
+| `BaseModel`       | `Patient`, `Address`             | Creates validated models                                         |
+| `Field`           | `age`, `weight`, `height`, `pin` | Enforces value constraints and regex                             |
+| `field_validator` | `email`                          | Checks that the email belongs to an approved company             |
+| `field_validator` | `name`                           | Converts the name to uppercase                                   |
+| `mode="before"`   | `age`                            | Shows that `"30"` is still a `str` before conversion             |
+| `mode="after"`    | `age`                            | Shows that `"30"` has become an `int`                            |
+| `model_validator` | `validate_patient`               | Validates multiple fields together (`age` and `contact_details`) |
+| `computed_field`  | `bmi`                            | Automatically calculates BMI from `weight` and `height`          |
+| Nested Model      | `Address`                        | Validates the nested address object automatically                |
+| Serialization     | `model_dump()`                   | Converts the model to a dictionary, including the computed `bmi` |
+
+
+</details>
 ---
 
 # 🎯 Rule of Thumb
