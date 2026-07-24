@@ -1,3 +1,24 @@
+# Python `@property` Decorator
+
+The `@property` decorator in Python allows you to define methods that behave like attributes. It provides a clean and Pythonic way to implement **getters**, **setters**, and **deleters** while keeping the public API simple.
+
+Instead of calling a method like:
+
+```python
+obj.get_value()
+```
+
+you can simply write:
+
+```python
+obj.value
+```
+
+---
+
+# Basic Example
+
+```python
 class Circle:
     def __init__(self, radius):
         self.radius = radius
@@ -6,34 +27,48 @@ class Circle:
     def area(self):
         return 3.14 * (self.radius ** 2)
 
+
 my_circle = Circle(5)
 
-print(my_circle.area) # Accessed as an attribute, output is 78.5
+print(my_circle.area)   # 78.5
+```
 
+### Output
 
-The @property decorator in Python is a built-in feature that allows you to define methods in a class that can be accessed and manipulated exactly like normal attributes. It provides a clean, Pythonic way to implement getters, setters, and deleters without breaking a class's external API. [1, 2, 3, 4, 5] 
-## Core Syntax and Components
-The @property ecosystem relies on three specific decorators applied to methods sharing the exact same name: [1, 6] 
+```
+78.5
+```
 
-* @property: Defines the getter method to read an attribute.
-* @<property_name>.setter: Defines the setter method to assign or validate a value.
-* @<property_name>.deleter: Defines the deleter method to clean up or delete an attribute. [6, 7] 
+Notice that `area` is accessed like an attribute (`my_circle.area`) instead of a method (`my_circle.area()`).
 
-## Complete Implementation Example
-The following example demonstrates data validation using a private internal attribute convention (_age). [7, 8] 
+---
 
+# How `@property` Works
+
+A property can have three parts:
+
+| Decorator | Purpose |
+|-----------|---------|
+| `@property` | Getter (read value) |
+| `@property_name.setter` | Setter (assign/validate value) |
+| `@property_name.deleter` | Deleter (delete or clean up value) |
+
+---
+
+# Complete Example
+
+```python
 class Person:
     def __init__(self, name, age):
         self.name = name
-        self.age = age  # This triggers the setter method automatically
+        self.age = age    # Calls the setter
 
-    # 1. The Getter
+    # Getter
     @property
     def age(self):
-        """Gets the person's age."""
         return self._age
 
-    # 2. The Setter (with validation logic)
+    # Setter
     @age.setter
     def age(self, value):
         if not isinstance(value, int):
@@ -42,33 +77,62 @@ class Person:
             raise ValueError("Age cannot be negative.")
         self._age = value
 
-    # 3. The Deleter
+    # Deleter
     @age.deleter
     def age(self):
-        print("Deleting age attribute...")
+        print("Deleting age...")
         del self._age
-# --- Usage ---p = Person("Alice", 25)
-# Reading the property (No parentheses needed!)
-print(p.age)  # Output: 25
-# Modifying the property (Triggers validation)
-p.age = 30 
-print(p.age)  # Output: 30
-# Invalid modification attempttry:
-    p.age = -5  # Raises ValueErrorexcept ValueError as e:
-    print(e)  # Output: Age cannot be negative.
-# Deleting the propertydel p.age
+```
 
-## Key Use Cases
+### Usage
 
-* Data Validation: Sanitize or enforce rules on incoming data before saving it to your object.
-* Read-Only Attributes: Omit the .setter method entirely to expose data that cannot be altered from outside the class.
-* Computed Attributes: Calculate values dynamically on the fly (e.g., creating an area property from width and height) instead of storing stale data.
-* Backward Compatibility: Safely replace a standard attribute with code logic later on without changing how external developers call your object. [4, 5, 8, 9, 10, 11, 12] 
-The @property decorator manages internal object data using standard dot notation (obj.attribute). This technique provides clean code with full structural control behind the scenes. [1, 2, 3, 4, 5] 
-------------------------------
-## 1. Data Validation
-Data validation prevents your object from accepting bad data. The setter method acts as a security guard, scanning incoming values before saving them. [6, 7, 8, 9, 10] 
+```python
+p = Person("Alice", 25)
 
+# Reading
+print(p.age)
+
+# Updating
+p.age = 30
+print(p.age)
+
+# Invalid update
+try:
+    p.age = -5
+except ValueError as e:
+    print(e)
+
+# Delete
+del p.age
+```
+
+### Output
+
+```
+25
+30
+Age cannot be negative.
+Deleting age...
+```
+
+---
+
+# Why Use `@property`?
+
+The `@property` decorator is commonly used for:
+
+- Data validation
+- Read-only attributes
+- Computed attributes
+- Backward compatibility
+
+---
+
+# 1. Data Validation
+
+A setter can validate incoming values before storing them.
+
+```python
 class Account:
     def __init__(self, balance):
         self.balance = balance
@@ -79,50 +143,120 @@ class Account:
 
     @balance.setter
     def balance(self, value):
-        # Enforce validation rules
         if value < 0:
             raise ValueError("Balance cannot be negative!")
         self._balance = value
+```
+
+### Usage
+
+```python
 acc = Account(100)
-acc.balance = -50  # Throws ValueError: Balance cannot be negative!
 
-## 2. Read-Only Attributes
-Read-only attributes protect data that must never change after creation. By defining a getter with @property and omitting the .setter method, Python prevents external modifications. [7, 11] 
+acc.balance = 200
+print(acc.balance)
 
+acc.balance = -50
+```
+
+### Output
+
+```
+200
+ValueError: Balance cannot be negative!
+```
+
+---
+
+# 2. Read-Only Attributes
+
+Simply omit the setter to make an attribute read-only.
+
+```python
 class User:
     def __init__(self, user_id):
         self._user_id = user_id
 
     @property
-    def user_id(self):  # Getter only
+    def user_id(self):
         return self._user_id
+```
+
+### Usage
+
+```python
 user = User("USR-9921")
-print(user.user_id)  # Works fine: "USR-9921"
-user.user_id = "NEW-ID"  # Throws AttributeError: can't set attribute
 
-## 3. Computed Attributes
-Computed attributes calculate values live when requested instead of saving them as static fields. This practice eliminates duplicate data states and ensures calculations remain accurate. [6, 7, 12, 13] 
+print(user.user_id)
 
+user.user_id = "NEW-ID"
+```
+
+### Output
+
+```
+USR-9921
+AttributeError: can't set attribute
+```
+
+---
+
+# 3. Computed Attributes
+
+Properties are perfect for values that should be calculated dynamically.
+
+```python
 class Rectangle:
     def __init__(self, width, height):
         self.width = width
         self.height = height
 
     @property
-    def area(self):  # Calculated on the fly
+    def area(self):
         return self.width * self.height
+```
+
+### Usage
+
+```python
 rect = Rectangle(4, 5)
-print(rect.area)  # Output: 20
+
+print(rect.area)
+
 rect.width = 10
-print(rect.area)  # Output: 50 (Automatically updates!)
 
-## 4. Backward Compatibility
-Backward compatibility updates your internal class design without breaking existing dependencies. You can convert an unprotected public attribute into a managed property without forcing other developers to rewrite their code from obj.value to obj.get_value(). [14, 15, 16] 
+print(rect.area)
+```
 
-# Phase 1: Original implementation used a basic attributeclass Product:
+### Output
+
+```
+20
+50
+```
+
+Notice that the area updates automatically whenever the width changes.
+
+---
+
+# 4. Backward Compatibility
+
+Suppose your original class exposed a public attribute.
+
+### Before
+
+```python
+class Product:
     def __init__(self, price):
-        self.price = price  # Public, unsecured attribute
-# Phase 2: Refactored later to include validation without breaking external scriptsclass Product:
+        self.price = price
+```
+
+Later, you decide to add validation without changing how users interact with the class.
+
+### After
+
+```python
+class Product:
     def __init__(self, price):
         self.price = price
 
@@ -132,5 +266,59 @@ Backward compatibility updates your internal class design without breaking exist
 
     @price.setter
     def price(self, value):
-        self._price = max(0, value)  # Ensures price never drops below 0
-# External code like 'p.price = 20' continues working identically across both setups!
+        self._price = max(0, value)
+```
+
+External code continues to work exactly the same:
+
+```python
+p = Product(20)
+
+p.price = 50
+print(p.price)
+```
+
+No changes are required in existing code.
+
+---
+
+# Best Practices
+
+- Use a leading underscore (`_value`) for the internal storage variable.
+- Perform validation inside setters.
+- Use properties instead of trivial `get_` and `set_` methods.
+- Use read-only properties for values that should not be modified.
+- Use properties for computed values instead of storing duplicate data.
+
+---
+
+# Summary
+
+| Feature | Benefit |
+|---------|---------|
+| `@property` | Access methods like attributes |
+| Getter | Returns a value |
+| Setter | Validates or modifies assigned values |
+| Deleter | Cleans up or deletes an attribute |
+| Computed Property | Calculates values dynamically |
+| Read-Only Property | Prevents modification |
+| Validation | Ensures only valid data is stored |
+| Backward Compatibility | Add logic without changing the public API |
+
+---
+
+# Key Takeaways
+
+- `@property` makes methods behave like attributes.
+- Setters allow validation before assigning values.
+- Properties can be read-only by omitting the setter.
+- Computed properties always return up-to-date values.
+- They help maintain a clean, Pythonic, and maintainable API.
+
+---
+
+## References
+
+- Python Official Documentation: https://docs.python.org/3/library/functions.html#property
+- Python Data Model: https://docs.python.org/3/reference/datamodel.html
+- Python Tutorial (Classes): https://docs.python.org/3/tutorial/classes.html
