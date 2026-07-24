@@ -82,3 +82,71 @@ Squishing a really long sentence into one tiny summary package creates a bottlen
 
 Would you like to do a mock interview question on one of these topics, or should we dive deeper into the math behind the LSTM gates?
 </details>
+
+<details><summary>few more details</summary>
+Here are short, comprehensive notes based on the [Introduction to Recurrent Neural Networks](https://www.geeksforgeeks.org/machine-learning/introduction-to-recurrent-neural-network/) article:
+
+### **Recurrent Neural Networks (RNNs) Overview**
+
+RNNs are a type of neural network designed specifically for sequential and temporal data. Unlike traditional networks, they "remember" past inputs to provide context, making them ideal for tasks where data order matters.
+
+---
+
+### **Key Components**
+
+* **Recurrent Neurons:** The fundamental processing units holding a "hidden state" to maintain information about past sequence inputs.
+* **RNN Unfolding (Unrolling):** Representing each time step of the sequence as a separate layer to show information flow over time.
+
+### **Architecture & Working**
+
+Unlike feedforward networks, RNNs use **shared weights** across time steps.
+
+* **Hidden State Update:** The current hidden state relies on the previous state and the current input:
+$h_t = \tanh(W_{hh} \cdot h_{t-1} + W_{xh} \cdot x_t)$
+* **Output Calculation:** The output is based on the current hidden state:
+$y_t = W_{hy} \cdot h_t$
+* **Training:** RNNs use **Backpropagation Through Time (BPTT)**, propagating errors backward across the time steps to update the shared weights based on temporal dependencies.
+
+---
+
+### **Types of RNN Architectures**
+
+1. **One-to-One:** Single input, single output (traditional, non-sequential tasks).
+2. **One-to-Many:** Single input, multiple sequential outputs (e.g., image captioning).
+3. **Many-to-One:** Sequential inputs, single output (e.g., sentiment analysis).
+4. **Many-to-Many:** Sequential inputs, sequential outputs (e.g., language translation).
+
+---
+
+### **Major RNN Variants**
+
+* **Vanilla RNN:** The simplest form; struggles with long sequences due to the vanishing gradient problem.
+* **Bidirectional RNNs:** Process data in both forward and backward directions to capture full context (e.g., text analysis).
+* **Long Short-Term Memory (LSTM):** Solves the vanishing gradient problem using three gates (Input, Forget, Output) to selectively remember and forget information.
+* **Gated Recurrent Units (GRU):** A simplified, computationally faster version of LSTM that combines the input and forget gates.
+
+---
+
+### **Advantages & Limitations**
+
+**Advantages:**
+
+* Maintains sequential memory of previous inputs.
+* Highly effective for time-series and contextual predictions.
+
+**Limitations:**
+
+* **Vanishing Gradient:** Gradients shrink over long sequences, making it hard to learn long-term dependencies.
+* **Exploding Gradient:** Gradients grow uncontrollably, causing unstable training.
+
+### **Common Applications**
+
+* **Natural Language Processing (NLP):** Sentiment analysis, machine translation, text generation.
+* **Time-Series Prediction:** Weather forecasting, stock market prediction.
+* **Speech Recognition:** Speech-to-text processing.</details>
+
+<img width="550" height="415" alt="image" src="https://github.com/user-attachments/assets/f0712c9f-a339-4fe9-b781-efb8aa7612bb" />
+
+
+<img width="492" height="649" alt="image" src="https://github.com/user-attachments/assets/72361ad1-727e-4b87-af00-83020bd12067" />
+
