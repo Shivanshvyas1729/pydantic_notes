@@ -1,5 +1,5 @@
 ## `@dataclass` — Working, Advantages, and Flaws
-
+remove the boiler plate code for __int__ , ____repr___ ,etc
 ---
 
 # Working
