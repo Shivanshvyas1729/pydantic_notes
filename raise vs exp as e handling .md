@@ -1,4 +1,5 @@
 That's a great question. Think of **`raise`** and **`except ... as e`** as doing two completely different jobs.
+<img width="1009" height="348" alt="image" src="https://github.com/user-attachments/assets/7c636372-1708-460c-913e-deade1ea1d5b" />
 
 * **`raise` = Throw an error.**
 * **`except ... as e` = Catch an error that was thrown.**
