@@ -1,6 +1,3 @@
-Here is your complete, perfected guide. All original steps, commands, image references, and personal notes have been preserved while adding comprehensive comments and explaining key concepts you should learn.
-
----
 
 ## 1. Dockerfile Configuration
 
