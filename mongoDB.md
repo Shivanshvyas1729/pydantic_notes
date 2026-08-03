@@ -1,4 +1,60 @@
+<details><summary>fast track</summary>
 
+<img width="1408" height="768" alt="Gemini_Generated_Image_43ubmj43ubmj43ub" src="https://github.com/user-attachments/assets/e2efcd27-ff77-4015-a563-967d2a20a90e" />
+
+-----------------------
+<img width="1408" height="768" alt="Gemini_Generated_Image_iiac8biiac8biiac" src="https://github.com/user-attachments/assets/84f2fdfd-8be3-4cdc-afef-58f748ef59b8" />
+
+-------------
+
+<img width="768" height="1376" alt="Gemini_Generated_Image_l4turll4turll4tu" src="https://github.com/user-attachments/assets/edf47c17-d29e-4bd0-aa54-98b3d6d0ad6a" />
+
+-----------------------
+<img width="768" height="1376" alt="Gemini_Generated_Image_whstniwhstniwhst" src="https://github.com/user-attachments/assets/e62264f5-4a53-4d4c-906e-50b998146891" />
+
+------------------------
+<img width="768" height="1376" alt="Gemini_Generated_Image_dcah9sdcah9sdcah" src="https://github.com/user-attachments/assets/e7681233-323a-4438-a36c-495aade7a165" />
+
+----------------------------
+
+<img width="768" height="1376" alt="Gemini_Generated_Image_qmrce4qmrce4qmrc" src="https://github.com/user-attachments/assets/9e3059a7-6287-4917-be5d-3db085f4e19b" />
+
+---------------------------
+<img width="768" height="1376" alt="Gemini_Generated_Image_hl3jtahl3jtahl3j" src="https://github.com/user-attachments/assets/e079e10c-7521-4f03-a4ae-0b12cd58673f" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</details>
 
 <details><summary>basic code to check connection is working or not</summary>
 
