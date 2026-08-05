@@ -57,7 +57,7 @@
 </details>
 
 <details><summary>basic code to check connection is working or not</summary>
-
+```python
 import asyncio
 from pymongo import AsyncMongoClient
 
@@ -82,7 +82,7 @@ async def main():
 
 # Run the async function
 asyncio.run(main())
-
+```
 
 </details>
 
