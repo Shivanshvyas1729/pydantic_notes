@@ -1,40 +1,41 @@
-# ⚡ Complete FastAPI Master Note & Learning Syllabus
+# ⚡ Complete FastAPI Master Note & Fast-Learning Cheat Sheet
 
 ---
 
 ## 📋 Table of Contents
 
-1. [Introduction to FastAPI & ASGI](#1-introduction-to-fastapi--asgi)
-2. [Project Setup & ASGI Servers (Uvicorn)](#2-project-setup--asgi-servers-uvicorn)
-3. [Routing & Endpoint Definitions](#3-routing--endpoint-definitions)
-4. [Path Parameters & Type Hints](#4-path-parameters--type-hints)
-5. [Query Parameters & Default Values](#5-query-parameters--default-values)
-6. [Request Body & Pydantic Data Models](#6-request-body--pydantic-data-models)
+1. [Introduction to FastAPI & ASGI Architecture](#1-introduction-to-fastapi--asgi-architecture)
+2. [Project Setup & ASGI Server (Uvicorn)](#2-project-setup--asgi-server-uvicorn)
+3. [Routing & HTTP Methods (GET, POST, PUT, PATCH, DELETE)](#3-routing--http-methods-get-post-put-patch-delete)
+4. [Path Parameters & Type Converters](#4-path-parameters--type-converters)
+5. [Query Parameters & Default Constraints](#5-query-parameters--default-constraints)
+6. [Request Body & Pydantic Validation Models](#6-request-body--pydantic-validation-models)
 7. [Response Models & Data Filtering](#7-response-models--data-filtering)
 8. [HTTP Status Codes & Response Customization](#8-http-status-codes--response-customization)
 9. [Dependency Injection System (`Depends`)](#9-dependency-injection-system-depends)
-10. [Error Handling & HTTPException](#10-error-handling--httpexception)
-11. [File Uploads (`UploadFile` & `File`)](#11-file-uploads-uploadfile--file)
+10. [Error Handling & `HTTPException`](#10-error-handling--httpexception)
+11. [Form Data & File Uploads (`UploadFile` & `File`)](#11-form-data--file-uploads-uploadfile--file)
 12. [Authentication & Security (JWT & OAuth2)](#12-authentication--security-jwt--oauth2)
 13. [Database Integration (SQLAlchemy Async ORM / SQLModel)](#13-database-integration-sqlalchemy-async-orm--sqlmodel)
 14. [Asynchronous Programming (`async` / `await`)](#14-asynchronous-programming-async--await)
-15. [Middleware & Request Lifecycle](#15-middleware--request-lifecycle)
+15. [Middleware & Request Lifecycle Hooks](#15-middleware--request-lifecycle-hooks)
 16. [Background Tasks (`BackgroundTasks`)](#16-background-tasks-backgroundtasks)
-17. [Automated Testing (`TestClient` & Pytest)](#17-automated-testing-testclient--pytest)
-18. [Production Deployment (Docker, Gunicorn + Uvicorn Workers, Nginx)](#18-production-deployment-docker-gunicorn--uvicorn-workers-nginx)
+17. [Modular Architecture (`APIRouter`)](#17-modular-architecture-apirouter)
+18. [Automated Testing (`TestClient` & Pytest)](#18-automated-testing-testclient--pytest)
+19. [Production Deployment (Docker, Gunicorn + Uvicorn Workers, Nginx)](#19-production-deployment-docker-gunicorn--uvicorn-workers-nginx)
 
 ---
 
-## 1. Introduction to FastAPI & ASGI
+## 1. Introduction to FastAPI & ASGI Architecture
 
 ### 1. What it is
-FastAPI is a modern, high-performance, asynchronous Python web framework built on top of **Starlette** (for web routing/ASGI) and **Pydantic** (for data validation and serialization), leveraging standard Python type hints.
+FastAPI is a modern, high-performance, asynchronous Python web framework built on top of **Starlette** (for web routing and ASGI concurrency) and **Pydantic** (for data validation, type casting, and schema generation).
 
 ### 2. Why it exists
-Traditional WSGI frameworks (like synchronous Flask/Django) process requests synchronously and lack automatic interactive documentation or runtime schema validation. FastAPI was created to leverage Python 3.7+ `async`/`await` features for high throughput, automated OpenAPI/Swagger documentation generation, and zero-boilerplate type safety.
+Traditional WSGI frameworks (Flask/Django) execute synchronously and lack native type safety or auto-generated OpenAPI documentation. FastAPI provides `async`/`await` performance (comparable to Node.js/Go), auto-generated Swagger UI docs at `/docs`, and zero-boilerplate Pydantic type validation.
 
 ### 3. How it works
-FastAPI processes requests using ASGI (Asynchronous Server Gateway Interface). It parses HTTP requests using Starlette's event loop, passes parameters through Pydantic data models for type conversion and validation, runs non-blocking async view handlers, and automatically generates interactive OpenAPI UI endpoints at `/docs` and `/redoc`.
+FastAPI processes incoming requests via ASGI (Asynchronous Server Gateway Interface). It parses HTTP payloads through Pydantic schemas, converts parameters based on standard Python type hints, runs async handlers on an event loop, and serializes output responses to JSON.
 
 ### 4. Minimal example
 ```python
@@ -44,133 +45,156 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "FastAPI is operational"}
 ```
 
 ### 5. One exercise
-**Exercise**: Create a `/health` GET endpoint that returns a JSON object containing `{"status": "ok", "version": "1.0.0"}` and verify it in the auto-generated Swagger UI at `http://127.0.0.1:8000/docs`.
+**Exercise**: Create a GET endpoint `/health` returning `{"status": "ok", "version": "1.0.0"}` and inspect the interactive Swagger UI documentation at `http://127.0.0.1:8000/docs`.
 
 ### 6. One common mistake
-Treating FastAPI like a synchronous WSGI framework by running heavy blocking CPU tasks directly inside `async def` functions, which freezes the event loop for all concurrent users.
+Treating FastAPI like a synchronous framework by running heavy blocking CPU/disk operations directly inside `async def` functions, freezing the event loop for all concurrent users.
 
 ### 7. One best practice
-Always declare Python type hints on path operations and parameters to get automatic data validation, IDE autocompletion, and interactive Swagger documentation out of the box.
+Always declare Python type hints (`int`, `str`, `EmailStr`, `BaseModel`) on view function parameters to get automatic data validation, IDE autocompletion, and OpenAPI docs.
 
 ---
 
-## 2. Project Setup & ASGI Servers (Uvicorn)
+## 2. Project Setup & ASGI Server (Uvicorn)
 
 ### 1. What it is
-The initialization of a Python virtual environment (`venv`), installation of `fastapi` and `uvicorn`, and execution of an **ASGI server** (`uvicorn`) to serve the asynchronous application.
+Setting up a Python virtual environment (`venv`), installing `fastapi` and `uvicorn`, and executing an **ASGI server** (`uvicorn`) to serve the asynchronous application.
 
 ### 2. Why it exists
-FastAPI is an application framework, not a web server. ASGI servers like Uvicorn provide the event loop infrastructure necessary to handle high-concurrency HTTP/WebSocket connections asynchronously.
+FastAPI is an application framework, not an HTTP web server. ASGI servers like Uvicorn provide the event loop infrastructure necessary to process asynchronous network sockets.
 
 ### 3. How it works
-Uvicorn listens on a socket port, translates HTTP wire bytes into ASGI message dictionaries, invokes the FastAPI callable application, and streams response data back across the socket connection.
+Uvicorn listens on a socket port, translates HTTP wire bytes into ASGI message dictionaries, invokes the FastAPI application callable, and streams response data back across the socket.
 
 ### 4. Minimal example
 ```bash
 # 1. Environment Setup
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install fastapi uvicorn[standard]
+pip install "fastapi[standard]" uvicorn
 
-# 2. Run server with hot-reload
+# 2. Launch Uvicorn Development Server with auto-reload
 uvicorn main:app --reload --port 8000
 ```
 
 ### 5. One exercise
-**Exercise**: Create a project folder with a `.venv`, write a basic FastAPI app in `main.py`, and run Uvicorn on port `8080` with auto-reloading enabled.
+**Exercise**: Launch a FastAPI application in `main.py` using `uvicorn main:app --reload --port 8080` and verify hot-reloading by adding a new route.
 
 ### 6. One common mistake
-Forgetting the `--reload` flag during development, leading to confusion when code updates are not reflected in running API responses.
+Forgetting the `--reload` flag during local development, leading to confusion when code updates are not reflected in live API responses.
 
 ### 7. One best practice
-Use `uvicorn[standard]` to install high-performance C-based dependencies like `uvloop` (event loop) and `httptools` (HTTP parser).
+Use `pip install "fastapi[standard]"` to install high-performance C-based dependencies like `uvloop` (fast event loop) and `httptools` (fast HTTP parser).
 
 ---
 
-## 3. Routing & Endpoint Definitions
+## 3. Routing & HTTP Methods (GET, POST, PUT, PATCH, DELETE)
 
 ### 1. What it is
-The mechanism of mapping HTTP methods (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`) and URL path patterns to specific asynchronous view functions using decorator methods on the `FastAPI` app instance or `APIRouter`.
+Mapping URL path patterns and specific HTTP request verbs (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`) to Python view functions using decorator methods on the `FastAPI` app instance (`@app.get()`, `@app.post()`, etc.).
 
 ### 2. Why it exists
-Enables clean RESTful URL architecture, organizing API endpoints into logical domain modules and routing incoming requests to their respective business handlers.
+Enables building RESTful APIs where different HTTP verbs on the same URL path execute distinct CRUD (Create, Read, Update, Delete) actions.
 
-### 3. How it works
-FastAPI registers decorated functions in an internal route table. When a request arrives, the router matches the URL path and HTTP method, validates input inputs, and executes the handler function.
+### 3. HTTP Methods Summary
+| Method | Decorator | Purpose | Typical Action | Response Code |
+|---|---|---|---|---|
+| `GET` | `@app.get()` | Read data | Fetch user list or profile | `200 OK` |
+| `POST` | `@app.post()` | Create new data | Register user or submit form | `201 Created` |
+| `PUT` | `@app.put()` | Replace resource | Complete document update | `200 OK` |
+| `PATCH` | `@app.patch()` | Partial update | Update specific fields (e.g. email) | `200 OK` |
+| `DELETE` | `@app.delete()` | Remove resource | Delete user record | `204 No Content` |
 
 ### 4. Minimal example
 ```python
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 
 app = FastAPI()
 
-@app.get("/items")
-async def get_items():
-    return [{"id": 1, "name": "Item A"}]
+@app.get("/users")
+async def list_users():
+    return [{"id": 1, "username": "alice"}]
 
-@app.post("/items")
-async def create_item():
-    return {"message": "Item created"}
+@app.post("/users", status_code=status.HTTP_201_CREATED)
+async def create_user(user_data: dict):
+    return {"status": "created", "user": user_data}
+
+@app.put("/users/{user_id}")
+async def update_user(user_id: int, user_data: dict):
+    return {"status": "replaced", "id": user_id, "data": user_data}
+
+@app.patch("/users/{user_id}")
+async def patch_user(user_id: int, email: str):
+    return {"status": "updated", "id": user_id, "new_email": email}
+
+@app.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user(user_id: int):
+    return None
 ```
 
 ### 5. One exercise
-**Exercise**: Build an API with 4 distinct endpoints (`/users` GET, POST, PUT, DELETE) that return appropriate JSON status payloads for each HTTP verb.
+**Exercise**: Build an API with 5 routes for `/products` (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`) that return JSON payloads with their respective HTTP method names.
 
 ### 6. One common mistake
-Using duplicate path combinations (e.g. defining `@app.get("/users")` twice), causing FastAPI to execute only the first registered route handler.
+Using `@app.get()` for endpoints that create or modify database state, violating HTTP REST idempotency standards.
 
 ### 7. One best practice
-Use `APIRouter` to split routes across multiple files instead of declaring all endpoints directly on a single main `app` instance.
+Always set appropriate default success status codes on decorators (e.g. `@app.post(..., status_code=status.HTTP_201_CREATED)`).
 
 ---
 
-## 4. Path Parameters & Type Hints
+## 4. Path Parameters & Type Converters
 
 ### 1. What it is
-Dynamic URL path segments defined within curly braces (e.g. `/users/{user_id}`) that extract values from the URL path and cast them to declared Python types.
+Dynamic path variables declared inside curly braces inside the route string (e.g. `/users/{user_id}`) that extract values from the URL path and cast them to Python types.
 
 ### 2. Why it exists
-Allows building RESTful endpoints that target specific resources by ID while enforcing strict data type validation at the routing layer.
+Enables targeting specific individual resources by ID while enforcing automatic type validation at the router level.
 
 ### 3. How it works
-FastAPI matches the dynamic path bracket `{user_id}`, converts the string value to the specified type hint (`int`), validates it against Pydantic rules, and passes the parsed parameter to the view function. If validation fails, it returns a `422 Unprocessable Entity` JSON response automatically.
+FastAPI extracts the path variable `{user_id}`, converts it to the declared type (`int`, `str`, `float`, `UUID`), and passes it to the view function. If type validation fails, FastAPI returns an automatic `422 Unprocessable Entity` JSON response.
 
 ### 4. Minimal example
 ```python
+from uuid import UUID
 from fastapi import FastAPI, Path
 
 app = FastAPI()
 
-@app.get("/users/{user_id}")
-async def read_user(user_id: int = Path(..., gt=0, description="User ID must be > 0")):
-    return {"user_id": user_id, "type": type(user_id).__name__}
+@app.get("/items/{item_id}")
+async def read_item(item_id: int = Path(..., gt=0, description="Item ID must be > 0")):
+    return {"item_id": item_id, "type": type(item_id).__name__}
+
+@app.get("/orders/{order_uuid}")
+async def read_order(order_uuid: UUID):
+    return {"order_uuid": str(order_uuid)}
 ```
 
 ### 5. One exercise
-**Exercise**: Create an endpoint `/products/{product_id}` where `product_id` must be an integer between 1 and 1000. Return a `422` validation error if an invalid string or out-of-range integer is provided.
+**Exercise**: Create a path parameter endpoint `/products/{product_id}` where `product_id` must be an integer between 1 and 500. Verify that passing string `"abc"` returns a `422` error.
 
 ### 6. One common mistake
-Defining static path routes *after* dynamic path routes (e.g., placing `/users/me` below `/users/{user_id}`), causing `"me"` to be matched as a string `user_id`.
+Declaring static paths *after* dynamic path routes (e.g. placing `@app.get("/users/me")` below `@app.get("/users/{user_id}")`), causing `"me"` to be matched as a string `user_id`.
 
 ### 7. One best practice
-Order routes from specific to general: place static paths (like `/users/me`) above dynamic paths (like `/users/{user_id}`).
+Order routes from specific to general: place static paths (like `/users/me`) above dynamic path routes (like `/users/{user_id}`).
 
 ---
 
-## 5. Query Parameters & Default Values
+## 5. Query Parameters & Default Constraints
 
 ### 1. What it is
-Key-value pairs appended to the URL after a question mark (`?search=python&limit=10`) that are automatically mapped to function arguments not present in the URL path pattern.
+Key-value parameters appended to the URL query string after `?` (e.g., `/items?search=fastapi&limit=10`) that map to view function arguments not defined in the path pattern.
 
 ### 2. Why it exists
-Enables client-side filtering, sorting, searching, and pagination of collection resources without cluttering the main URL path structure.
+Allows client-side filtering, sorting, searching, and pagination of collection resources without cluttering the URL route path.
 
 ### 3. How it works
-FastAPI inspects the parameters of the view function. Any function argument not declared in the `{path}` pattern is automatically parsed from HTTP URL query string parameters, converted, validated, and assigned default values if specified.
+FastAPI parses arguments not present in the `{path}` pattern from the query string, applies default values or optional handling, and validates constraints using `Query()`.
 
 ### 4. Minimal example
 ```python
@@ -189,26 +213,26 @@ async def read_items(
 ```
 
 ### 5. One exercise
-**Exercise**: Create a GET endpoint `/orders` accepting optional `status` (string), `skip` (int default 0), and `limit` (int default 20) query parameters.
+**Exercise**: Create a GET endpoint `/search` that accepts an optional `q` string, `skip` (default 0), and `limit` (default 20, max 50).
 
 ### 6. One common mistake
-Confusing path parameters and query parameters by forgetting to include the parameter variable in the route's path string decorator.
+Confusing path parameters and query parameters by omitting the variable from the `{path}` string pattern.
 
 ### 7. One best practice
-Use `Query()` to set explicit constraints (`min_length`, `max_length`, `regex`, `ge`, `le`) to protect database queries from invalid inputs.
+Use `Query()` to set strict constraints (`min_length`, `max_length`, `ge`, `le`) to protect database queries from invalid client inputs.
 
 ---
 
-## 6. Request Body & Pydantic Data Models
+## 6. Request Body & Pydantic Validation Models
 
 ### 1. What it is
-Parsing, deserializing, and validating JSON payloads sent in the HTTP request body using **Pydantic** schema models (`BaseModel`).
+Parsing, validating, and deserializing JSON payloads sent in HTTP POST/PUT/PATCH request bodies using **Pydantic** `BaseModel` classes.
 
 ### 2. Why it exists
-Eliminates manual `request.get_json()` extraction and boilerplate validation code. Pydantic guarantees that data inside the view function strictly matches the declared schema types.
+Eliminates manual JSON payload extraction and validation checks. Pydantic guarantees that data arriving inside the view function strictly matches the declared schema types.
 
 ### 3. How it works
-FastAPI reads the HTTP request stream, parses JSON bytes into a dict, passes it to the specified Pydantic `BaseModel` class for attribute parsing and constraint checking, and injects the validated model instance into the view handler parameter.
+FastAPI reads the HTTP request stream, parses JSON bytes into a dict, passes it to the specified Pydantic `BaseModel` class for validation, and injects the instantiated model object into the view parameter.
 
 ### 4. Minimal example
 ```python
@@ -221,7 +245,7 @@ app = FastAPI()
 class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
-    age: Optional[int] = Field(None, ge=18)
+    age: Optional[int] = Field(None, ge=18, le=120)
 
 @app.post("/users/")
 async def create_user(user: UserCreate):
@@ -229,13 +253,13 @@ async def create_user(user: UserCreate):
 ```
 
 ### 5. One exercise
-**Exercise**: Define a Pydantic model `Item` with `name` (str), `price` (float > 0), and optional `tax` (float). Create a POST endpoint `/items/` that accepts and echoes the validated payload.
+**Exercise**: Define a Pydantic schema `Product` with `name` (str min length 2), `price` (float > 0), and optional `tags` (list of strings). Create a POST endpoint that accepts it.
 
 ### 6. One common mistake
-Passing raw Python dicts without Pydantic models for complex POST/PUT request bodies, forfeiting automatic type safety and OpenAPI doc generation.
+Passing raw Python dicts without Pydantic schemas for complex request bodies, forfeiting automatic type validation and OpenAPI doc generation.
 
 ### 7. One best practice
-Separate input schemas from output schemas (e.g. `UserCreate` without ID vs `UserResponse` with ID and timestamps).
+Separate input validation schemas (e.g. `UserCreate`) from output response schemas (e.g. `UserResponse`).
 
 ---
 
@@ -245,10 +269,10 @@ Separate input schemas from output schemas (e.g. `UserCreate` without ID vs `Use
 Declaring the output data schema of an endpoint using `response_model=ModelClass` inside the path operation decorator.
 
 ### 2. Why it exists
-Ensures returned API responses match strict output schemas, automatically filtering out sensitive fields (like hashed passwords) and converting ORM objects to valid JSON structures.
+Ensures returned responses strictly adhere to defined output schemas, automatically filtering out sensitive database fields (like `hashed_password`) and serializing ORM objects to JSON.
 
 ### 3. How it works
-When a view function returns data (a dict, Pydantic instance, or ORM model), FastAPI filters the attributes through the specified `response_model`, applies exclusion rules (`response_model_exclude_unset=True`), serializes data to JSON, and updates the OpenAPI schema docs.
+FastAPI takes the data returned by the view function, passes it through the declared `response_model`, applies field filtering (`response_model_exclude_unset=True`), serializes it to JSON, and updates the OpenAPI schema docs.
 
 ### 4. Minimal example
 ```python
@@ -268,15 +292,15 @@ class UserOut(BaseModel):
 
 @app.post("/users/", response_model=UserOut)
 async def create_user(user: UserIn):
-    # Password is automatically excluded from final JSON output!
+    # Password is automatically excluded from the final JSON response payload!
     return user
 ```
 
 ### 5. One exercise
-**Exercise**: Create an endpoint that receives a full user record (including `password_hash`) but uses a `response_model` to return only `id`, `username`, and `created_at`.
+**Exercise**: Create an endpoint that reads a full database user object containing `id`, `username`, `email`, and `password_hash`, but uses `response_model` to return only `id` and `username`.
 
 ### 6. One common mistake
-Returning sensitive database fields in response payloads because no output `response_model` was declared.
+Leaking sensitive database internal attributes in public API responses because no output `response_model` was declared.
 
 ### 7. One best practice
 Use `response_model_exclude_unset=True` when returning partial payloads for PATCH endpoints to omit unset fields cleanly.
@@ -289,10 +313,10 @@ Use `response_model_exclude_unset=True` when returning partial payloads for PATC
 Configuring appropriate standard HTTP status codes (`201 Created`, `204 No Content`, `404 Not Found`) and returning custom response types (`JSONResponse`, `HTMLResponse`, `StreamingResponse`, `FileResponse`).
 
 ### 2. Why it exists
-RESTful APIs must communicate operation outcomes using standardized HTTP status codes and appropriate media content types.
+Communicates operation outcomes using standardized HTTP status codes and appropriate media content types.
 
 ### 3. How it works
-FastAPI sets default response status codes via `status_code=status.HTTP_201_CREATED` in path decorators or allows returning explicit Starlette `Response` object subclasses directly.
+FastAPI sets default response status codes via `status_code=status.HTTP_201_CREATED` on decorators or allows returning explicit Starlette `Response` objects directly.
 
 ### 4. Minimal example
 ```python
@@ -311,10 +335,10 @@ async def delete_item(item_id: int):
 ```
 
 ### 5. One exercise
-**Exercise**: Create a DELETE route that returns `204 No Content` on success, and a POST route that returns `201 Created` with a `Location` response header.
+**Exercise**: Write a DELETE route that returns `204 No Content` on success, and a POST route returning `201 Created` with custom headers.
 
 ### 6. One common mistake
-Returning HTTP status code `200 OK` for error conditions or resource creation steps instead of using standard HTTP status codes (`201`, `400`, `404`).
+Returning status code `200 OK` for error conditions or resource creation steps instead of using standard HTTP status codes (`201`, `400`, `404`).
 
 ### 7. One best practice
 Import and use `fastapi.status` constants (e.g. `status.HTTP_201_CREATED`) instead of hardcoding raw integer numbers.
@@ -363,7 +387,7 @@ Use `yield` inside dependency functions for context management (e.g., opening da
 
 ---
 
-## 10. Error Handling & HTTPException
+## 10. Error Handling & `HTTPException`
 
 ### 1. What it is
 Raising `HTTPException` or registering custom exception handlers via `@app.exception_handler` to return structured JSON error payloads to clients.
@@ -403,10 +427,10 @@ Pass a structured dict or list to `detail=` inside `HTTPException` for rich clie
 
 ---
 
-## 11. File Uploads (`UploadFile` & `File`)
+## 11. Form Data & File Uploads (`UploadFile` & `File`)
 
 ### 1. What it is
-Handling file uploads in FastAPI using `File()` for raw bytes or `UploadFile` for memory-efficient background file streaming.
+Handling form submissions and file uploads using `Form()`, `File()` for raw bytes, and `UploadFile` for memory-efficient background file streaming.
 
 ### 2. Why it exists
 `UploadFile` streams large files to disk/spool memory rather than loading the entire file payload into Python RAM at once, preventing memory exhaustion attacks.
@@ -416,14 +440,18 @@ FastAPI uses `python-multipart` to parse `multipart/form-data` request bodies. `
 
 ### 4. Minimal example
 ```python
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Form
 
 app = FastAPI()
 
 @app.post("/upload/")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(
+    username: str = Form(...),
+    file: UploadFile = File(...)
+):
     contents = await file.read()
     return {
+        "username": username,
         "filename": file.filename,
         "content_type": file.content_type,
         "size_bytes": len(contents)
@@ -444,7 +472,7 @@ Use `UploadFile` instead of `bytes = File(...)` for all production file endpoint
 ## 12. Authentication & Security (JWT & OAuth2)
 
 ### 1. What it is
-Implementing stateless API authentication using **OAuth2 Password Bearer flow** and **JSON Web Tokens (JWT)** via `OAuth2PasswordRequestForm` and `PyJWT` or `python-jose`.
+Implementing stateless API authentication using **OAuth2 Password Bearer flow** and **JSON Web Tokens (JWT)** via `OAuth2PasswordRequestForm` and `PyJWT`.
 
 ### 2. Why it exists
 Secures sensitive API routes by validating client identity tokens without storing session state on the server.
@@ -502,7 +530,7 @@ Leverage FastAPI's interactive Swagger UI (`/docs`), which natively integrates w
 ## 13. Database Integration (SQLAlchemy Async ORM / SQLModel)
 
 ### 1. What it is
-Connecting FastAPI asynchronously to relational databases (PostgreSQL, SQLite) using **SQLAlchemy 2.0 Async Session** or **SQLModel** (Pydantic + SQLAlchemy hybrid).
+Connecting FastAPI asynchronously to relational databases (PostgreSQL, SQLite) using **SQLAlchemy 2.0 Async Session** or **SQLModel**.
 
 ### 2. Why it exists
 Enables non-blocking database queries over async database drivers (`asyncpg`, `aiosqlite`), preventing database I/O calls from bottlenecking FastAPI's event loop.
@@ -590,7 +618,7 @@ If you must use a blocking library (like `requests`), declare the route as a sta
 
 ---
 
-## 15. Middleware & Request Lifecycle
+## 15. Middleware & Request Lifecycle Hooks
 
 ### 1. What it is
 Functions that sit between incoming HTTP requests and path handlers, intercepting and modifying requests before they arrive and responses before they depart.
@@ -678,7 +706,48 @@ Keep `BackgroundTasks` functions lightweight and idempotent; pass primitive data
 
 ---
 
-## 17. Automated Testing (`TestClient` & Pytest)
+## 17. Modular Architecture (`APIRouter`)
+
+### 1. What it is
+Organizing related application routes into modular router files using `APIRouter` (similar to Flask Blueprints).
+
+### 2. Why it exists
+Prevents creating massive single-file applications by splitting endpoints into logical feature modules (`users.py`, `items.py`, `auth.py`).
+
+### 3. How it works
+`APIRouter` instances declare routes with their own prefixes (`prefix="/users"`) and tags (`tags=["Users"]`). The main `FastAPI` app includes them using `app.include_router(users_router)`.
+
+### 4. Minimal example
+```python
+# routers/users.py
+from fastapi import APIRouter
+
+router = APIRouter(prefix="/users", tags=["Users"])
+
+@router.get("/")
+async def list_users():
+    return [{"id": 1, "username": "alice"}]
+
+# main.py
+from fastapi import FastAPI
+from routers.users import router as users_router
+
+app = FastAPI()
+app.include_router(users_router)
+```
+
+### 5. One exercise
+**Exercise**: Create a `products_router` with `prefix="/products"` and register it in the main application file.
+
+### 6. One common mistake
+Forgetting to call `app.include_router(router)` in `main.py`, causing modular routes to return 404 errors.
+
+### 7. One best practice
+Use `tags=["ModuleName"]` on `APIRouter` to group routes visually into clean categories inside the Swagger UI documentation (`/docs`).
+
+---
+
+## 18. Automated Testing (`TestClient` & Pytest)
 
 ### 1. What it is
 Testing FastAPI applications using Starlette's `TestClient` (built on `httpx`) alongside `pytest` for automated unit and integration tests.
@@ -727,7 +796,7 @@ Use `app.dependency_overrides[get_db] = override_get_db` to replace production d
 
 ---
 
-## 18. Production Deployment (Docker, Gunicorn + Uvicorn Workers, Nginx)
+## 19. Production Deployment (Docker, Gunicorn + Uvicorn Workers, Nginx)
 
 ### 1. What it is
 Deploying FastAPI applications in production using containerized **Docker** images, managed by **Gunicorn process manager** running multiple **Uvicorn worker processes** (`uvicorn.workers.UvicornWorker`), behind an **Nginx** reverse proxy.
