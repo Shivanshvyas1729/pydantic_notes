@@ -22,41 +22,10 @@
 ---------------------------
 <img width="768" height="1376" alt="Gemini_Generated_Image_hl3jtahl3jtahl3j" src="https://github.com/user-attachments/assets/e079e10c-7521-4f03-a4ae-0b12cd58673f" />
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </details>
 
 <details><summary>basic code to check connection is working or not</summary>
+
 ```python
 import asyncio
 from pymongo import AsyncMongoClient
@@ -87,6 +56,7 @@ asyncio.run(main())
 </details>
 
 <details><summary>basics</summary>
+
 # The Ultimate MongoDB & PyMongo Masterclass Guide (v4.15+)
 
 ## Table of Contents
@@ -402,7 +372,7 @@ employees.find().sort([
 page_num = 2
 page_size = 10
 
-employees.find()    .sort("salary", -1)    .skip((page_num - 1) * page_size)    .limit(page_size)
+employees.find().sort("salary", -1).skip((page_num - 1) * page_size).limit(page_size)
 ```
 
 ### 3.3 The Cursor Mental Model & Batch Fetching
@@ -651,7 +621,7 @@ When querying vectors, MongoDB computes distance between Query Vector ($q$) and 
 
 | Metric | Formula | Range | Best Used For |
 | :--- | :--- | :--- | :--- |
-| **Cosine** | $\cos(	heta) = rac{q \cdot u}{\|q\| \|u\|}$ | $[-1, 1]$ | Text similarity when vector length varies. |
+| **Cosine** | $\cos(\theta) = \frac{q \cdot u}{\|q\| \|u\|}$ | $[-1, 1]$ | Text similarity when vector length varies. |
 | **Euclidean** | $d(q, u) = \sqrt{\sum (q_i - u_i)^2}$ | $[0, \infty)$ | Audio, visual spatial queries. |
 | **Dot Product** | $q \cdot u = \sum q_i u_i$ | $(-\infty, \infty)$ | Normalized vectors ($\|v\| = 1$). Fastest! |
 
@@ -733,16 +703,10 @@ def vector_search_rag(user_query: str):
 
     # 3. Retrieve Context
     results = list(collection.aggregate(pipeline))
-    context_str = "
----
-".join([doc["content"] for doc in results])
+    context_str = "\n---\n".join([doc["content"] for doc in results])
 
     # 4. Generate LLM Output
-    prompt = f"Context:
-{context_str}
-
-User Query: {user_query}
-Answer:"
+    prompt = f"Context:\n{context_str}\n\nUser Query: {user_query}\nAnswer:"
     completion = ai_client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}]
@@ -776,17 +740,13 @@ async def async_vector_search_rag(user_query: str):
 
     cursor = await collection.aggregate(pipeline)
     retrieved_docs = await cursor.to_list(length=3)
-    context = "
-".join([doc["content"] for doc in retrieved_docs])
+    context = "\n".join([doc["content"] for doc in retrieved_docs])
 
     chat_response = await ai_client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": "Answer questions based on database context."},
-            {"role": "user", "content": f"Context:
-{context}
-
-Question: {user_query}"}
+            {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {user_query}"}
         ]
     )
 
@@ -798,6 +758,7 @@ Question: {user_query}"}
 *   **Exclude Embeddings from Output:** Vectors are heavy (~12 KB per document). Exclude them using `{"$project": {"embedding": 0}}` to save network bandwidth.
 *   **Tune numCandidates:** Balance recall accuracy and latency by setting it to 10× to 20× the limit.
 *   **Workload Isolation:** Enable dedicated Atlas Search Nodes to isolate vector search compute from transactional workloads.
+
 </details>
 
 
@@ -848,7 +809,6 @@ async def close_mongo_connection():
 def get_database() -> AsyncDatabase:
     """Get database instance for Dependency Injection"""
     return database
-
 ```
 
 ### Senior Reality vs. Junior Code: Why Write It This Way?
@@ -858,16 +818,12 @@ def get_database() -> AsyncDatabase:
 * **Junior Code:**
 ```python
 client = AsyncMongoClient("mongodb+srv://admin:MyPassword@cluster...")
-
 ```
-
 
 * **Senior Code:**
 ```python
 client = AsyncMongoClient(settings.MONGO_URL)
-
 ```
-
 
 * **Senior Reality:** Hardcoding passwords means a GitHub leak leads to a hacked database in minutes. Use `settings.MONGO_URL` to pull credentials safely from a hidden `.env` file that is never uploaded online.
 
@@ -877,17 +833,13 @@ client = AsyncMongoClient(settings.MONGO_URL)
 ```python
 except Exception as e: 
     print(e)
-
 ```
-
 
 * **Senior Code:**
 ```python
 except Exception as e: 
     logger.error(f"❌ Failed to connect to MongoDB: {str(e)}")
-
 ```
-
 
 * **Senior Reality:** Standard `print()` statements vanish into the void on a live cloud server. Using `loguru` (`logger.error`) writes formatted, color-coded, timestamped errors directly to a permanent log file so you can debug it the next morning.
 
@@ -896,16 +848,12 @@ except Exception as e:
 * **Junior Code:**
 ```python
 client = None
-
 ```
-
 
 * **Senior Code:**
 ```python
 client: AsyncMongoClient | None = None
-
 ```
-
 
 * **Senior Reality:** Python is dynamically typed. It won't warn you if you misspell a command later (`client.fnd_one`). Using modern type hints explicitly teaches your code editor what this object is, providing instant autocomplete and underlining typos while you type.
 
@@ -918,9 +866,7 @@ client: AsyncMongoClient | None = None
 async def get_users():
     client = AsyncMongoClient(settings.MONGO_URL) 
     return await client.db.users.find().to_list(10)
-
 ```
-
 
 * **Senior Code:**
 ```python
@@ -928,9 +874,7 @@ async def get_users():
 async def connect_to_mongo():
     global client
     client = AsyncMongoClient(settings.MONGO_URL)
-
 ```
-
 
 * **Senior Reality:** If 1,000 users visit the site simultaneously, creating 1,000 separate connections will overload and crash MongoDB. By defining the client at the top of the file and using the `global` keyword, you create a single Connection Pool when the server starts. All 1,000 users will safely share a managed pool of ~50 background connections.
 
@@ -940,9 +884,7 @@ async def connect_to_mongo():
 ```python
 # Defining the client without timeout settings.
 client = AsyncMongoClient(settings.MONGO_URL)
-
 ```
-
 
 * **Senior Code:**
 ```python
@@ -951,9 +893,7 @@ client = AsyncMongoClient(
     serverSelectionTimeoutMS=30000,
     connectTimeoutMS=30000,
 )
-
 ```
-
 
 * **Senior Reality:** If the database loses power, Python will wait forever for a response, causing incoming requests to pile up until the web server runs out of memory and completely freezes. Setting `connectTimeoutMS=30000` acts as a Circuit Breaker. It forcefully cuts the cord after 30 seconds, allowing your app to stay alive and display a friendly "Try again later" error.
 
@@ -964,30 +904,28 @@ client = AsyncMongoClient(
 # Catching a connection error, logging it, and just letting the script continue.
 except Exception as e:
     logger.error(e)
-
 ```
-
 
 * **Senior Code:**
 ```python
 except Exception as e:
     logger.error(e)
     raise  # Forcefully crashes the app
-
 ```
 
-
 * **Senior Reality:** If the app turns on but fails to connect to the database (e.g., wrong password), it will serve 100% broken pages to your users. Using the `raise` keyword at the end of the `except` block is a pattern called "Failing Fast." It intentionally crashes the app during startup, preventing broken code from ever reaching the public.
-*
- </details>
 
+</details>
 
 <details><summary>vetor db settings</summary>
+
 Here is the absolute complete specification of all possible fields, parameters, and structural options allowed within a [MongoDB Atlas Vector Search](https://www.mongodb.com/docs/vector-search/) index definition. [1] 
-------------------------------
+
+---
 ## 1. Vector Configuration Parameters ("type": "vector")
 This block handles dense vector coordinates. For your continuous voice system, keeping latency low depends heavily on how these are set up. [2] 
 
+```json
 {
   "type": "vector",
   "path": "embedding",
@@ -996,64 +934,64 @@ This block handles dense vector coordinates. For your continuous voice system, k
   "indexingMethod": "hnsw",
   "storedSource": false
 }
+```
 
-## Full Parameter Reference
+### Full Parameter Reference
 
-* 
-* type (Required)
-* Options: "vector"
-   * Note: Explicitly declares this field type for processing spatial float arrays. [2, 3] 
-* path (Required)
-* Options: Any valid field name string (e.g., "embedding", "vector_data", "audio_chunk_vector").
-   * Note: The exact property path in your collection's BSON structure where vectors are stored. [3, 4] 
-* numDimensions (Required)
-* Options: Any integer from 1 up to 8192.
-   * Note: Must exactly match your embedding model. For all-minilm-l6-v2, this must be set to 384. [1, 3] 
-* similarity (Required)
-* Options:
-   * "cosine": Measures the angular distance between vectors. Best for normalized textual or speech embeddings.
-      * "dotProduct": Calculates the scalar product. Highly optimized if your model already normalizes inputs natively.
-      * "euclidean": Measures straight-line spatial distance. Good for absolute geometric coordinates. [2] 
-   * indexingMethod (Optional)
-* Options:
-   * "hnsw": Hierarchical Navigable Small World graphs. The default choice. Offers highly accurate Approximate Nearest Neighbor (ANN) matches at sub-millisecond speeds.
-      * "flat": Added in recent engine updates for multi-tenant systems. It performs a sequential scan across localized data subsets. [5, 6, 7, 8] 
-   * storedSource (Optional)
-* Options: true, false
-   * Note: When set to true, the engine stores small document properties inside the search cluster memory cache. This eliminates secondary disk reads, helping your streaming voice bot grab text context significantly faster. [5] 
-* 
+* **type** (Required)
+  * Options: `"vector"`
+  * Note: Explicitly declares this field type for processing spatial float arrays. [2, 3] 
+* **path** (Required)
+  * Options: Any valid field name string (e.g., `"embedding"`, `"vector_data"`, `"audio_chunk_vector"`).
+  * Note: The exact property path in your collection's BSON structure where vectors are stored. [3, 4] 
+* **numDimensions** (Required)
+  * Options: Any integer from 1 up to 8192.
+  * Note: Must exactly match your embedding model. For all-minilm-l6-v2, this must be set to 384. [1, 3] 
+* **similarity** (Required)
+  * Options:
+    * `"cosine"`: Measures the angular distance between vectors. Best for normalized textual or speech embeddings.
+    * `"dotProduct"`: Calculates the scalar product. Highly optimized if your model already normalizes inputs natively.
+    * `"euclidean"`: Measures straight-line spatial distance. Good for absolute geometric coordinates. [2] 
+* **indexingMethod** (Optional)
+  * Options:
+    * `"hnsw"`: Hierarchical Navigable Small World graphs. The default choice. Offers highly accurate Approximate Nearest Neighbor (ANN) matches at sub-millisecond speeds.
+    * `"flat"`: Added in recent engine updates for multi-tenant systems. It performs a sequential scan across localized data subsets. [5, 6, 7, 8] 
+* **storedSource** (Optional)
+  * Options: `true`, `false`
+  * Note: When set to `true`, the engine stores small document properties inside the search cluster memory cache. This eliminates secondary disk reads, helping your streaming voice bot grab text context significantly faster. [5] 
 
-------------------------------
+---
 ## 2. Pre-Filtering Parameters ("type": "filter")
 Filter fields isolate your dataset before calculation loops run, preventing your database from computing cosine similarities over unneeded data rows. [1] 
 
+```json
 {
   "type": "filter",
   "path": "metadata.language"
 }
+```
 
-## Full Parameter Reference
+### Full Parameter Reference
 
-* 
-* type (Required)
-* Options: "filter"
-   * Note: Defines exact-match indexes for scalar variables. [1, 3] 
-* path (Required)
-* Options: Any text field name string (supports dot notation like "metadata.tenant_id", "session_id", "status", "is_active").
-   * Note: Atlas Vector Search allows pre-filtering on the following core data types:
-   * string
-      * numeric (integer, double, long)
-      * boolean
-      * date
-      * objectId
-      * UUID
-      * Arrays of any of the types listed above. [1] 
-   * 
+* **type** (Required)
+  * Options: `"filter"`
+  * Note: Defines exact-match indexes for scalar variables. [1, 3] 
+* **path** (Required)
+  * Options: Any text field name string (supports dot notation like `"metadata.tenant_id"`, `"session_id"`, `"status"`, `"is_active"`).
+  * Note: Atlas Vector Search allows pre-filtering on the following core data types:
+    * string
+    * numeric (integer, double, long)
+    * boolean
+    * date
+    * objectId
+    * UUID
+    * Arrays of any of the types listed above. [1] 
 
-------------------------------
+---
 ## Final Master Index Template
 This complete definition combines every production parameter for your voice system. You can paste this directly into your MongoDB Atlas Raw JSON Index Editor: [3] 
 
+```json
 {
   "fields": [
     {
@@ -1078,12 +1016,13 @@ This complete definition combines every production parameter for your voice syst
     }
   ]
 }
+```
 
-## Production Architecture Notes
+### Production Architecture Notes
 
-   1. Don't Turn on Quantization for a 384-Dimension Vector: While Atlas supports scalar and binary vector compression to save memory on huge 1536-dimension sets, compressing a small 384 coordinate vector will hurt your model's accuracy without providing any meaningful speed boost. [4] 
-   2. Combine Fields for Multi-Tenancy: In voice streaming applications, always include a unique string identifier field (like session_id or user_id) as a "filter" type. This prevents calculations from overflowing into data belonging to other active callers.
+1. **Don't Turn on Quantization for a 384-Dimension Vector:** While Atlas supports scalar and binary vector compression to save memory on huge 1536-dimension sets, compressing a small 384 coordinate vector will hurt your model's accuracy without providing any meaningful speed boost. [4] 
+2. **Combine Fields for Multi-Tenancy:** In voice streaming applications, always include a unique string identifier field (like `session_id` or `user_id`) as a "filter" type. This prevents calculations from overflowing into data belonging to other active callers.
 
-Would you like the corresponding Mongoose Schema representation for your Node.js backend setup, or the $vectorSearch aggregation query syntax to test searches from your code terminal? [7] 
+Would you like the corresponding Mongoose Schema representation for your Node.js backend setup, or the `$vectorSearch` aggregation query syntax to test searches from your code terminal? [7] 
 
 </details>
