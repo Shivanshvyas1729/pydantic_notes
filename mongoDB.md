@@ -218,6 +218,8 @@ async for doc in async_cursor:
 ```
 
 ### 2.4 Update Operations (update_one, update_many, replace_one)
+//syntax 
+db.collection_name.update_one(filter,update,option)
 ⚠️ **Beginner Pitfall:** Always use update operators like `$set` or `$inc`! Passing `{"salary": 100000}` directly into an `update_one` query without `$set` will raise a ValueError in modern PyMongo.
 
 ```python
