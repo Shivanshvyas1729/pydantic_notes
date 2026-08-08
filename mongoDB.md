@@ -71,7 +71,7 @@ asyncio.run(main())
 9. [Part 8 — Advanced MongoDB](#part-8--advanced-mongodb)
 10. [Part 9 — MongoDB as a Vector Database (Atlas Vector Search)](#part-9--mongodb-as-a-vector-database-atlas-vector-search)
 11. [Part 10 — Production RAG Pipeline (Sync & Async)](#part-10--production-rag-pipeline-sync--async)
-
+missing -> each push pop pull pullall , replace one doc , replaceone,upsert(update or insert)
 ---
 
 ## Part 1 — MongoDB Fundamentals
