@@ -1,3 +1,5 @@
+
+<details><summary>must watch</summary>https://youtu.be/3NacDJWGz8A?si=fWZhQBkDa9amyefe</details>
 <details><summary>fast track</summary>
 
 <img width="1408" height="768" alt="Gemini_Generated_Image_43ubmj43ubmj43ub" src="https://github.com/user-attachments/assets/e2efcd27-ff77-4015-a563-967d2a20a90e" />
