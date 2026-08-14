@@ -81,3 +81,42 @@ Async Python Explained for AI Backends — I/O vs CPU Bound</summary>
 
 
 </details>
+
+
+
+
+
+
+<details><summary> REST API Design for AI: Routes, Resources & Reality</summary>
+This video introduces **REST (Representational State Transfer)** as a core design principle for structuring APIs, specifically within the context of an *AI backend* (0:45).
+
+### **Core Concepts of REST**
+* **Resources:** The foundation of your API. Every piece of data you manage (e.g., users, documents, chat sessions) should be treated as a resource (0:58-1:09).
+* **Routes:** These should be **plural nouns**, not verbs. They represent the URL path to a resource (e.g., `/documents`) (1:20-1:47).
+* **HTTP Verbs:** The action to perform on a resource is defined by the method, not the URL. 
+    * **GET:** Fetch/Read data (2:03)
+    * **POST:** Create new resources (2:08)
+    * **PUT:** Replace an existing resource (2:10)
+    * **PATCH:** Update part of a resource (2:13)
+    * **DELETE:** Remove a resource (2:15)
+
+### **When to Use REST**
+REST is highly effective for managing stateful resources like *document ingestion*, *user management*, and *session handling* (2:37-2:43). 
+
+### **Limitations**
+REST can feel awkward for certain advanced AI workflows, such as:
+* **Streaming LLM responses** (2:48)
+* **Long-running background jobs** (2:50)
+* **Multi-step agentic workflows** (2:52)
+
+These scenarios do not always fit the standard request-response model, and other patterns may be better suited for them in future modules of this course.
+
+
+
+
+<img width="1280" height="720" alt="REST API Design for AI_ Routes, Resources   Reality 0-27 screenshot" src="https://github.com/user-attachments/assets/aa612eb8-ba3b-4285-89d7-9c9bb33b3135" />
+<img width="1280" height="720" alt="REST API Design for AI_ Routes, Resources   Reality 0-56 screenshot" src="https://github.com/user-attachments/assets/9ff77534-d07e-47e1-86c4-db86bf74f5c1" />
+<img width="1280" height="720" alt="REST API Design for AI_ Routes, Resources   Reality 1-20 screenshot" src="https://github.com/user-attachments/assets/6522f6c7-a999-470b-ab3d-7a4827955033" />
+<img width="1280" height="720" alt="REST API Design for AI_ Routes, Resources   Reality 2-4 screenshot" src="https://github.com/user-attachments/assets/cd7ab96e-c977-4505-b4d5-4a9cacc91ec9" />
+<img width="1280" height="720" alt="REST API Design for AI_ Routes, Resources   Reality 2-34 screenshot" src="https://github.com/user-attachments/assets/9c922f90-6150-40b3-8a0a-5ee69a4d5dff" />
+</details>
