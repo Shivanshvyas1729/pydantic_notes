@@ -120,3 +120,43 @@ These scenarios do not always fit the standard request-response model, and other
 <img width="1280" height="720" alt="REST API Design for AI_ Routes, Resources   Reality 2-4 screenshot" src="https://github.com/user-attachments/assets/cd7ab96e-c977-4505-b4d5-4a9cacc91ec9" />
 <img width="1280" height="720" alt="REST API Design for AI_ Routes, Resources   Reality 2-34 screenshot" src="https://github.com/user-attachments/assets/9c922f90-6150-40b3-8a0a-5ee69a4d5dff" />
 </details>
+
+
+
+<details><summary>FastAPI Path & Query Parameters with Validation</summary>
+
+This tutorial covers how to manage dynamic data in *FastAPI* using **path** and **query parameters**.
+
+### **Path Parameters**
+* **Purpose:** Used to identify a specific resource (e.g., fetching a specific document by ID) (0:53, 2:12).
+* **Definition:** Defined directly within the route URL using curly braces, such as `/document/{document_id}` (0:55, 0:59).
+* **Implementation:** Declared in the route string and added as a typed argument to the function (1:11).
+
+### **Query Parameters**
+* **Purpose:** Used for filtering, pagination, or optional configuration (1:32, 2:19).
+* **Definition:** Added after a question mark (?) in the URL (e.g., `/document?page=2`) (1:36).
+* **Implementation:** Defined as standard function arguments without appearing in the route string (1:42).
+
+### **Key Features**
+* **Automatic Validation:** *FastAPI* automatically validates parameters against the declared Python type (e.g., `int`, `str`, `bool`) (1:17, 2:49).
+* **Error Handling:** If a value does not match the type, *FastAPI* returns a **422 Unprocessable Entity** error automatically (1:26, 2:56).
+* **Efficiency:** No manual validation code is required; type hints act as the validation rule (3:02, 3:27).
+
+**Rule of Thumb:** Use path parameters for **identity** and query parameters for **options** (2:38).
+
+<img width="1280" height="720" alt="FastAPI Path   Query Parameters with Validation 0-31 screenshot" src="https://github.com/user-attachments/assets/2aca03f5-271e-48cb-89d7-eaa2feda1c57" />
+<img width="1280" height="720" alt="FastAPI Path   Query Parameters with Validation 0-55 screenshot" src="https://github.com/user-attachments/assets/531152d2-f49a-4c7b-b648-b969471f73b9" />
+<img width="1280" height="720" alt="FastAPI Path   Query Parameters with Validation 1-44 screenshot" src="https://github.com/user-attachments/assets/76dc51c4-daac-425d-a0d0-25de996cdd39" />
+<img width="1280" height="720" alt="FastAPI Path   Query Parameters with Validation 2-12 screenshot" src="https://github.com/user-attachments/assets/d6e0e577-82ee-44d2-bc65-a2ae091ab9d6" />
+<img width="1280" height="720" alt="FastAPI Path   Query Parameters with Validation 3-16 screenshot" src="https://github.com/user-attachments/assets/ae872fb2-c4d2-4cab-b697-3eb1b0246dec" />
+
+
+
+
+
+
+
+
+
+
+</details>
