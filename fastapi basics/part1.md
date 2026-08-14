@@ -55,11 +55,6 @@ Async Python Explained for AI Backends — I/O vs CPU Bound</summary>
 **Warning:** Never perform heavy CPU-intensive tasks inside an `async` function, as it will block your server and decrease performance (3:04-3:10).
 
 
-
-
-
-
-
 <img width="1280" height="720" alt="Async Python Explained for AI Backends — I_O vs CPU Bound 0-27 screenshot" src="https://github.com/user-attachments/assets/ad79c709-dc6d-4631-b869-62a3284222eb" />
 <img width="1280" height="720" alt="Async Python Explained for AI Backends — I_O vs CPU Bound 1-7 screenshot" src="https://github.com/user-attachments/assets/40a36700-3855-4036-9786-eef83111ec9e" />
 <img width="1280" height="720" alt="Async Python Explained for AI Backends — I_O vs CPU Bound 1-11 screenshot" src="https://github.com/user-attachments/assets/82e367b3-7944-48fc-bf77-d685c5e829f2" />
@@ -68,7 +63,20 @@ Async Python Explained for AI Backends — I/O vs CPU Bound</summary>
 <img width="1280" height="720" alt="Async Python Explained for AI Backends — I_O vs CPU Bound 2-30 screenshot" src="https://github.com/user-attachments/assets/0e72e34d-bee3-4b4e-8e67-01b631f3abb1" />
 <img width="1280" height="720" alt="Async Python Explained for AI Backends — I_O vs CPU Bound 2-53 screenshot" src="https://github.com/user-attachments/assets/bd780dc4-9717-4617-b810-5150802f1899" />
 
+</details>
 
+
+
+
+
+<details><summary>FastAPI Documentation</summary> 
+
+
+<img width="1280" height="720" alt="FastAPI Documentation_ Done in Seconds_ 0-44 screenshot" src="https://github.com/user-attachments/assets/4651d2a5-f3bb-447f-a1b2-a7749be4d66a" />
+<img width="1280" height="720" alt="FastAPI Documentation_ Done in Seconds_ 0-50 screenshot" src="https://github.com/user-attachments/assets/c2d12812-2d28-4271-9288-f240e64c28bc" />
+<img width="1280" height="720" alt="FastAPI Documentation_ Done in Seconds_ 1-23 screenshot" src="https://github.com/user-attachments/assets/6e70dbbf-d174-4248-8a62-3b269b56e8c3" />
+<img width="1280" height="720" alt="FastAPI Documentation_ Done in Seconds_ 1-43 screenshot" src="https://github.com/user-attachments/assets/45e45fc0-3b82-4c7d-8776-50e07f051b52" />
+<img width="1280" height="720" alt="FastAPI Documentation_ Done in Seconds_ 2-20 screenshot" src="https://github.com/user-attachments/assets/dc7ea70d-282f-4105-bfc3-80c5f96dc438" />
 
 
 
