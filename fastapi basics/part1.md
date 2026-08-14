@@ -1,5 +1,4 @@
 
-
 <details><summary >roadmap </summary>
   
 
@@ -248,5 +247,41 @@ By using both `response_model` and `status_code` in the route decorator, you can
 <img width="1280" height="720" alt="Stop Exposing Everything! Control Your FastAPI Output 2-1 screenshot" src="https://github.com/user-attachments/assets/62f6b171-d501-4cf6-b7f4-0a1f25a8fc95" />
 <img width="1280" height="720" alt="Stop Exposing Everything! Control Your FastAPI Output 2-43 screenshot" src="https://github.com/user-attachments/assets/434c383c-b834-446b-bc55-e423e4bfd153" />
 
+
+</details>
+
+
+<details><summary>
+The FastAPI Error Handling Pattern Every Dev Needs</summary>
+
+While *FastAPI* handles **validation errors** automatically (like incorrect data types or missing fields), it cannot predict every business-specific logic failure in your code.
+
+You still need to manually raise an `HTTPException` in situations where the request is technically valid, but the operation fails for other reasons (1:07 - 1:30). For example:
+
+* **Missing Resources:** If a user requests an ID for a document that doesn't exist in your database, *FastAPI* has no way of knowing this is an error unless you explicitly check and raise an exception (1:09 - 1:16).
+* **Logic Violations:** When a request violates a business rule—like trying to withdraw more money than available in an account—you must trigger the error yourself to provide a meaningful status code (e.g., a 400 Bad Request) (2:38 - 2:42).
+* **Custom Responses:** You may need to return specific error codes or structured JSON objects so that front-end developers or other services can handle the failure programmatically (2:04 - 2:25).
+
+In short: *FastAPI* handles **data integrity** for you, but you must handle **application logic** to ensure your API behaves correctly in real-world scenarios (0:19 - 0:53).
+
+<img width="1280" height="720" alt="The FastAPI Error Handling Pattern Every Dev Needs 0-27 screenshot" src="https://github.com/user-attachments/assets/61e4d265-9d02-404a-ad93-b404f0ed6fda" />
+<img width="1280" height="720" alt="The FastAPI Error Handling Pattern Every Dev Needs 1-3 screenshot" src="https://github.com/user-attachments/assets/dfe26b5e-b0bb-4ae4-9e1b-6402c21b8418" />
+<img width="1280" height="720" alt="The FastAPI Error Handling Pattern Every Dev Needs 1-34 screenshot" src="https://github.com/user-attachments/assets/11c8bf02-7daf-4fb3-861c-da8c5485ad97" />
+<img width="1280" height="720" alt="The FastAPI Error Handling Pattern Every Dev Needs 2-3 screenshot" src="https://github.com/user-attachments/assets/6d28b90b-b5bd-4aac-b7fc-7f1406a7dcbd" />
+<img width="1280" height="720" alt="The FastAPI Error Handling Pattern Every Dev Needs 2-34 screenshot" src="https://github.com/user-attachments/assets/2e8d7094-f3ff-4ea6-8a41-c321b3073fda" />
+
+</details>
+
+
+<details><summary>
+FastAPI File Uploads: The RAG Ingestion Pattern You Need</summary> 
+
+
+<img width="1280" height="720" alt="FastAPI File Uploads_ The RAG Ingestion Pattern You Need 0-24 screenshot" src="https://github.com/user-attachments/assets/9c335682-274c-406b-b8c8-c661d2eb4702" />
+<img width="1280" height="720" alt="FastAPI File Uploads_ The RAG Ingestion Pattern You Need 1-25 screenshot" src="https://github.com/user-attachments/assets/9fd470f5-6162-4aac-9c10-1fb41a33eed7" />
+
+<img width="1280" height="720" alt="FastAPI File Uploads_ The RAG Ingestion Pattern You Need 2-8 screenshot" src="https://github.com/user-attachments/assets/24540202-050f-4784-b47d-dd9ac48d82eb" />
+<img width="1280" height="720" alt="FastAPI File Uploads_ The RAG Ingestion Pattern You Need 2-28 screenshot" src="https://github.com/user-attachments/assets/f91920e4-0040-4740-a7f7-fdb9fcd69b78" />
+<img width="1280" height="720" alt="FastAPI File Uploads_ The RAG Ingestion Pattern You Need 2-55 screenshot" src="https://github.com/user-attachments/assets/13bdc382-f69d-4ce5-8797-68eadc936b33" />
 
 </details>
