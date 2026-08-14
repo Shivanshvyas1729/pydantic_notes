@@ -211,3 +211,42 @@ Useful for:
 <img width="1280" height="720" alt="FastAPI Request Bodies   Pydantic Models — Typed Input Contracts 2-40 screenshot" src="https://github.com/user-attachments/assets/ec898b90-003a-4741-8738-8e1296202f8c" />
 
 </details>
+
+
+
+<details><summary>
+Stop Exposing Everything! Control Your FastAPI Output</summary>
+
+
+This video explains how to control API responses in *FastAPI* to ensure security and clean data communication. Here are the key takeaways:
+
+**1. The Problem with Uncontrolled Responses (0:22 - 0:37):**
+Returning raw database objects can accidentally expose sensitive information like password hashes, internal IDs, or debug paths. 
+
+**2. Using Pydantic Response Models (0:49 - 1:57):**
+*   **Definition:** Create a *Pydantic* class containing only the fields you want to expose to the client.
+*   **Implementation:** Pass this model to the `response_model` parameter in your route decorator.
+*   **Automatic Filtering:** *FastAPI* will automatically strip any extra fields present in your internal object that aren't defined in your response model, providing a secure "output contract."
+
+**3. Communicating via HTTP Status Codes (1:59 - 2:39):**
+Status codes provide context about the API request outcome:
+*   **200s (Success):** Use `200` for standard success and `201` for successfully created resources.
+*   **400s (Client Error):** `400` for general bad requests, `401` for authentication issues, `404` for missing resources, and `422` for automatic validation failures.
+*   **500s (Server Error):** Indicates an issue on the server side.
+
+**4. Putting It All Together (2:41 - 3:08):**
+By using both `response_model` and `status_code` in the route decorator, you can achieve a clean, validated, and secure endpoint with minimal code.
+
+
+
+
+
+
+
+<img width="1280" height="720" alt="Stop Exposing Everything! Control Your FastAPI Output 0-46 screenshot" src="https://github.com/user-attachments/assets/681fee0b-c044-49ea-b790-85288c3fe534" />
+<img width="1280" height="720" alt="Stop Exposing Everything! Control Your FastAPI Output 1-57 screenshot" src="https://github.com/user-attachments/assets/0c4cd266-d8fe-44a5-a814-2b14ff4c1364" />
+<img width="1280" height="720" alt="Stop Exposing Everything! Control Your FastAPI Output 2-1 screenshot" src="https://github.com/user-attachments/assets/62f6b171-d501-4cf6-b7f4-0a1f25a8fc95" />
+<img width="1280" height="720" alt="Stop Exposing Everything! Control Your FastAPI Output 2-43 screenshot" src="https://github.com/user-attachments/assets/434c383c-b834-446b-bc55-e423e4bfd153" />
+
+
+</details>
