@@ -144,19 +144,70 @@ This tutorial covers how to manage dynamic data in *FastAPI* using **path** and 
 
 **Rule of Thumb:** Use path parameters for **identity** and query parameters for **options** (2:38).
 
+/user/101       → Path parameter
+/user?id=101    → Query parameter
+
 <img width="1280" height="720" alt="FastAPI Path   Query Parameters with Validation 0-31 screenshot" src="https://github.com/user-attachments/assets/2aca03f5-271e-48cb-89d7-eaa2feda1c57" />
 <img width="1280" height="720" alt="FastAPI Path   Query Parameters with Validation 0-55 screenshot" src="https://github.com/user-attachments/assets/531152d2-f49a-4c7b-b648-b969471f73b9" />
 <img width="1280" height="720" alt="FastAPI Path   Query Parameters with Validation 1-44 screenshot" src="https://github.com/user-attachments/assets/76dc51c4-daac-425d-a0d0-25de996cdd39" />
 <img width="1280" height="720" alt="FastAPI Path   Query Parameters with Validation 2-12 screenshot" src="https://github.com/user-attachments/assets/d6e0e577-82ee-44d2-bc65-a2ae091ab9d6" />
 <img width="1280" height="720" alt="FastAPI Path   Query Parameters with Validation 3-16 screenshot" src="https://github.com/user-attachments/assets/ae872fb2-c4d2-4cab-b697-3eb1b0246dec" />
 
+</details>
 
 
+<details><summary> FastAPI Request Bodies & Pydantic Models — Typed Input Contracts</summary>
 
 
+## Pydantic + FastAPI — Short Notes
 
+* **Pydantic** → Used to define and validate the structure of data in Python.
+* **FastAPI** → Uses Pydantic models to validate API request data automatically.
+* **Pydantic model** → Python class that inherits from `BaseModel`.
 
+```python
+class User(BaseModel):
+    name: str
+    age: int
+```
 
+### Why use it?
 
+* ✅ Defines a clear **data contract**
+* ✅ Automatically **validates input**
+* ✅ Rejects invalid data
+* ✅ Generates **API documentation**
+* ✅ Handles complex/nested JSON data
+
+### Nested models
+
+```python
+class Message(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: list[Message]
+```
+
+Useful for:
+
+* 🤖 Chatbots
+* 🔍 RAG applications
+* 🧠 LLM APIs
+* ML model APIs
+
+### Remember
+
+**Client → JSON → Pydantic validation → FastAPI → Python function**
+
+**Pydantic = Structure + Validation**
+**FastAPI = API framework**
+
+<img width="1280" height="720" alt="FastAPI Request Bodies   Pydantic Models — Typed Input Contracts 0-32 screenshot" src="https://github.com/user-attachments/assets/af7c2d27-4fb7-4322-b221-7a321206ce73" />
+<img width="1280" height="720" alt="FastAPI Request Bodies   Pydantic Models — Typed Input Contracts 1-2 screenshot" src="https://github.com/user-attachments/assets/14096848-88d1-4075-95c5-4755e436321f" />
+<img width="1280" height="720" alt="FastAPI Request Bodies   Pydantic Models — Typed Input Contracts 1-37 screenshot" src="https://github.com/user-attachments/assets/29aa5d87-37fc-47f4-8604-e8f2f1bc6f31" />
+<img width="1280" height="720" alt="FastAPI Request Bodies   Pydantic Models — Typed Input Contracts 2-9 screenshot" src="https://github.com/user-attachments/assets/35fdc6df-e21b-4d5b-a018-950697bf344a" />
+<img width="1280" height="720" alt="FastAPI Request Bodies   Pydantic Models — Typed Input Contracts 2-40 screenshot" src="https://github.com/user-attachments/assets/ec898b90-003a-4741-8738-8e1296202f8c" />
 
 </details>
