@@ -1,5 +1,30 @@
-
 # Machine Learning Fundamentals — Study Notes
+
+## Table of Contents
+1. [What is Machine Learning?](#1-what-is-machine-learning)
+   - [Why did ML boom in recent years?](#why-did-ml-boom-in-recent-years)
+2. [Types of Machine Learning](#2-types-of-machine-learning)
+   - [Where ML fits — the bigger picture](#where-ml-fits--the-bigger-picture)
+3. [Model Training, Overfitting & Underfitting](#3-model-training-overfitting--underfitting)
+   - [What is Model Training?](#what-is-model-training)
+   - [What is a Generalized Model?](#what-is-a-generalized-model)
+   - [Overfitting](#overfitting)
+   - [Underfitting](#underfitting)
+   - [Bias and Variance — clearing the confusion](#bias-and-variance--clearing-the-confusion)
+   - [The Bias-Variance Tradeoff](#the-bias-variance-tradeoff)
+   - [How to Handle Overfitting and Underfitting](#how-to-handle-overfitting-and-underfitting)
+4. [Handling Missing Data](#4-handling-missing-data)
+   - [Why does data go missing?](#why-does-data-go-missing)
+   - [Types of Missing Data](#types-of-missing-data)
+   - [Treatment of Missing Data](#treatment-of-missing-data)
+5. [Real Industry Interview Questions](#5-real-industry-interview-questions)
+   - [Conceptual / Foundational](#conceptual--foundational)
+   - [Bias-Variance / Overfitting-Underfitting](#bias-variance--overfitting-underfitting)
+   - [Missing Data](#missing-data-1)
+   - [Applied / Scenario-Based](#applied--scenario-based)
+   - [Quick Interview Cheat-Sheet](#quick-interview-cheat-sheet)
+
+---
 
 ## 1. What is Machine Learning?
 
@@ -39,9 +64,6 @@ ML is a subfield of **Artificial Intelligence (AI)**, and **Deep Learning (DL)**
 ```
 
 (This is the classic "concentric circles" overlap diagram — AI is the largest circle, ML sits inside it, and DL sits inside ML.)
-<img width="1294" height="1330" alt="image" src="https://github.com/user-attachments/assets/44ac69ce-d60f-48c5-b413-550f77b3a461" />
-
-
 
 ---
 
@@ -84,9 +106,7 @@ This is a commonly misunderstood pair of terms, so let's be precise:
   - Variance increases as complexity increases.
   - Total error = Bias² + Variance + Irreducible error, minimized at some optimal complexity.
  
-  - ( add this also bias is training error and variance testing error, can variance should be said it is the variation in data ? and bias mean static data ??)
-<img width="320" height="311" alt="image" src="https://github.com/user-attachments/assets/aec98a6d-51f1-4838-9338-d41f4d5f21c5" />
-
+    <img width="320" height="311" alt="image" src="https://github.com/user-attachments/assets/aec98a6d-51f1-4838-9338-d41f4d5f21c5" />
 
 <img width="1133" height="680" alt="image" src="https://github.com/user-attachments/assets/d45982bd-646e-4e89-a318-050c04de8164" />
 
@@ -141,26 +161,6 @@ The missingness is related to the **value that is missing itself**.
 | **MCAR** | Safe to use **listwise deletion** (drop rows) or simple imputation (mean/median/mode) — since missingness isn't biased. |
 | **MAR** | Use **model-based imputation** (regression imputation, KNN imputation, multiple imputation) using the related observed variables. |
 | **MNAR** | Hardest to handle — deletion or naive imputation introduces bias. Requires **domain knowledge**, sensitivity analysis, or explicitly modeling the missingness mechanism (e.g., Heckman correction). |
-
-In statistics and data analysis, **bias** means a **systematic error or skew** that leads to inaccurate conclusions.
-
-Unlike random noise or accidents, bias consistently pushes your results in a specific, wrong direction.
-
-### What Bias Means in Missing Data (MNAR)
-
-When data is **Missing Not at Random (MNAR)**, the missingness itself depends on the unobserved value.
-
-* **The Problem:** People with low incomes might be less likely to report their income on a survey.
-* **Naive Imputation / Deletion:** If you delete those missing rows or fill them in with the overall average, you ignore *why* they are missing.
-* **The Resulting Bias:** Your calculated average income will be **systematically higher** than the true average because the low-income data was systematically wiped out.
-
-### Summary Comparison
-
-| Concept | What It Represents | Impact on Analysis |
-| --- | --- | --- |
-| **Variance / Random Error** | Unpredictable noise or natural variation | Increases uncertainty, but averages out over large samples. |
-| **Bias / Systematic Error** | Consistent shift away from the true value | Produces confidently wrong conclusions, regardless of sample size. |
-
 
 **General imputation techniques:**
 - Mean/Median/Mode imputation (simple, but reduces variance and can introduce bias if data isn't MCAR)
