@@ -161,7 +161,26 @@ The missingness is related to the **value that is missing itself**.
 | **MCAR** | Safe to use **listwise deletion** (drop rows) or simple imputation (mean/median/mode) — since missingness isn't biased. |
 | **MAR** | Use **model-based imputation** (regression imputation, KNN imputation, multiple imputation) using the related observed variables. |
 | **MNAR** | Hardest to handle — deletion or naive imputation introduces bias. Requires **domain knowledge**, sensitivity analysis, or explicitly modeling the missingness mechanism (e.g., Heckman correction). |
+<details><summary>MNAR bais-></summary>
+In statistics and data analysis, **bias** means a **systematic error or skew** that leads to inaccurate conclusions.
 
+Unlike random noise or accidents, bias consistently pushes your results in a specific, wrong direction.
+
+### What Bias Means in Missing Data (MNAR)
+
+When data is **Missing Not at Random (MNAR)**, the missingness itself depends on the unobserved value.
+
+* **The Problem:** People with low incomes might be less likely to report their income on a survey.
+* **Naive Imputation / Deletion:** If you delete those missing rows or fill them in with the overall average, you ignore *why* they are missing.
+* **The Resulting Bias:** Your calculated average income will be **systematically higher** than the true average because the low-income data was systematically wiped out.
+
+### Summary Comparison
+
+| Concept | What It Represents | Impact on Analysis |
+| --- | --- | --- |
+| **Variance / Random Error** | Unpredictable noise or natural variation | Increases uncertainty, but averages out over large samples. |
+| **Bias / Systematic Error** | Consistent shift away from the true value | Produces confidently wrong conclusions, regardless of sample size. |
+</details>
 **General imputation techniques:**
 - Mean/Median/Mode imputation (simple, but reduces variance and can introduce bias if data isn't MCAR)
 - KNN imputation
