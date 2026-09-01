@@ -223,6 +223,7 @@ df['feature_log'] = np.log1p(df['feature'])   # log1p = log(x + 1), handles zero
 ```
 
 ---
+<img width="885" height="557" alt="image" src="https://github.com/user-attachments/assets/5b20e31f-713b-4593-b395-79d322f7af7e" />
 
 ## 5. Data Encoding
 
